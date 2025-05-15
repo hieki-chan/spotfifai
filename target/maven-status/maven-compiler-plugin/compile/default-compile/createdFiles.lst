@@ -9,6 +9,7 @@ com\tien\swing\PasswordText.class
 spotfifai\util\located\ResourceLocator.class
 com\tien\swing\RoundPanelShadow.class
 spotfifai\util\audioplayer\PlayerEvent.class
+spotfifai\ui\MainFrame$6.class
 spotfifai\util\theme\Theme$1.class
 com\tien\swing\RoundSplitPane.class
 spotfifai\util\audioplayer\PlayerException.class
@@ -30,6 +31,7 @@ spotfifai\controller\SongController.class
 spotfifai\ui\MainFrame$1.class
 spotfifai\dao\BaseDAO.class
 spotfifai\musicplayer\MusicPlayerController.class
+spotfifai\ui\PlaylistsForm.class
 com\tien\swing\PasswordText$2.class
 com\tien\swing\SearchText$1.class
 spotfifai\ui\MainFrame.class
@@ -37,11 +39,15 @@ spotfifai\models\Song.class
 spotfifai\ui\MainFrame$4.class
 spotfifai\ui\MusicItemForm.class
 spotfifai\util\audioplayer\AudioPlayerDemo$SimplePlayerListener.class
+spotfifai\ui\PlaylistItemForm$1.class
 spotfifai\dbengine\DBConnector.class
 com\tien\swing\PasswordText$1.class
 com\tien\swing\RoundPanel.class
-spotfifai\dbengine\IQuery.class
+spotfifai\ui\PlaylistItemForm.class
+spotfifai\models\User.class
 spotfifai\ui\LoginFrame.class
 spotfifai\util\audioplayer\AudioPlayerDemo.class
 com\tien\swing\UserText.class
 spotfifai\models\Playlist.class
+spotfifai\controller\PlaylistsController.class
+spotfifai\dbengine\IQueryResult.class

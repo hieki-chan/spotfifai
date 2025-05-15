@@ -5,13 +5,8 @@
 package spotfifai.dao;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import spotfifai.dbengine.JDBQuery;
 import spotfifai.models.Playlist;
 
@@ -50,19 +45,19 @@ public class PlaylistDAO extends BaseDAO<Playlist>
     }
 
     @Override
-    void update()
+    public void update()
     {
 
     }
 
     @Override
-    void delete()
+    public void delete()
     {
 
     }
 
     @Override
-    void add(Playlist entity)
+    public void add(Playlist entity)
     {
 
     }

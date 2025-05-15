@@ -23,11 +23,13 @@ public class Playlist
         this.songIds = songIds;
     }
 
-    public Playlist(String name, List<Integer> songIds)
+    public Playlist(String name)
     {
         this.name = name;
-        this.songIds = songIds;
     }
     
-    
+    public Playlist()
+    {
+        
+    }
 }

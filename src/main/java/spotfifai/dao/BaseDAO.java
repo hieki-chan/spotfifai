@@ -29,6 +29,21 @@ public abstract class BaseDAO<T>
     abstract void delete();
     abstract void add(T entity);
     
+    public void saveChanges()
+    {
+        
+    }
+    
+    public T get(Integer hashCode)
+    {
+        return cachedEntities.get(hashCode);
+    }
+    
+    public int getCount()
+    {
+        return cachedEntities.size();
+    }
+    
     protected Connection getConnection()
     {
         return ServiceLocator.get(DBConnector.class).getConnection();

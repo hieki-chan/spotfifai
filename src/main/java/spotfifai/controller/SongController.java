@@ -5,12 +5,29 @@
 package spotfifai.controller;
 
 import spotfifai.dao.SongDAO;
+import spotfifai.dao.UserDAO;
+import spotfifai.models.Song;
+import spotfifai.models.User;
+import spotfifai.util.located.IService;
 
 /**
  *
  * @author admin
  */
-public class SongController
+public class SongController implements IService
 {
-    private SongDAO songDAO = new SongDAO();
+    private SongDAO songDAO;
+    private UserDAO userDAO;
+    
+    public SongController(SongDAO songDAO, UserDAO userDAO)
+    {
+        this.songDAO = songDAO;
+        this.userDAO = userDAO;
+    }
+    
+    public String getArtistNameFromSong(Song song)
+    {
+        User artist = userDAO.get(song.getArtistId());
+        return artist.getUsername();
+    }
 }

@@ -2,34 +2,51 @@
 
 USE SPOTFIFAI
 
+DROP TABLE [User]
+CREATE TABLE [User]
+(
+	userId CHAR(10) NOT NULL PRIMARY KEY,
+	username NVARCHAR(50),
+	password NCHAR(20),
+)
+
+
 DROP TABLE SONG
 CREATE TABLE SONG
 (
-	id INT PRIMARY KEY IDENTITY(1,1),
-    name NVARCHAR(100),
-	description NTEXT,
+	songId NVARCHAR(20) NOT NULL PRIMARY KEY,
+    name NVARCHAR(100) NOT NULL,
+	description NVARCHAR,
+	userId CHAR(10) FOREIGN KEY REFERENCES [User](userId)
 )
 
 
 INSERT INTO SONG (name, description) 
 VALUES (N'Bohemian Rhapsody', N'Một bản nhạc huyền thoại của Queen.');
 
-INSERT INTO SONG (name, description) 
-VALUES (N'Stairway to Heaven', N'Ca khúc nổi tiếng của Led Zeppelin.');
-
-INSERT INTO SONG (name, description) 
-VALUES (N'Imagine', N'Bài hát biểu tượng của John Lennon.');
-
-INSERT INTO SONG (name, description) 
-VALUES (N'Let It Be', N'Tác phẩm nổi tiếng của The Beatles.');
-
-INSERT INTO SONG (name, description) 
-VALUES (N'Shape of You', N'Một hit toàn cầu của Ed Sheeran.');
 
 SELECT * FROM SONG
 
+DROP TABLE Playlist
 CREATE TABLE Playlist
 (
-	id INT PRIMARY KEY,
+	playlistId INT NOT NULL PRIMARY KEY,
     name NVARCHAR(100),
+	userId CHAR(10) FOREIGN KEY REFERENCES [User](userId)
 )
+
+DROP TABLE PlaylistDetail
+CREATE TABLE PlaylistDetail
+(
+	playlistId INT NOT NULL,
+	songId NVARCHAR(20),
+	PRIMARY KEY (playlistId, songId),
+	FOREIGN KEY (playlistId) REFERENCES Playlist(playlistId),
+	FOREIGN KEY (songId) REFERENCES Song(songId)
+)
+
+
+DROP TABLE PlaylistDetail
+DROP TABLE Playlist
+DROP TABLE Song
+DROP TABLE [User]

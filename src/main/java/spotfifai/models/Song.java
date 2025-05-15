@@ -14,6 +14,7 @@ public class Song
     private int id;
     private String name;
     private String description;
+    private String artistId;
 
     public Song(int id, String name, String description)
     {
@@ -35,6 +36,11 @@ public class Song
     public String getDescription()
     {
         return description;
+    }
+    
+    public int getArtistId()
+    {
+        return artistId.hashCode();
     }
 
     @Override

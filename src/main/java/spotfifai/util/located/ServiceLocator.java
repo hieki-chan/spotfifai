@@ -13,11 +13,16 @@ import java.util.Map;
  */
 public class ServiceLocator
 {
-    private static final Map<Class<?>, Object> services = new HashMap<>();
+    private static final Map<Class<?>, IService> services = new HashMap<>();
     
-    public static <T> void register(T service)
+    public static <T> void register(IService service)
     {
         services.put(service.getClass(), service);
+    }
+    
+    public static <T> void unregister(Class<T> clazz)
+    {
+        services.remove(clazz);
     }
     
     public static <T> T get(Class<T> clazz)
