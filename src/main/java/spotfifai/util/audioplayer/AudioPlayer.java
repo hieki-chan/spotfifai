@@ -35,7 +35,7 @@ public class AudioPlayer implements Runnable
     private int lineCurrentBufferSize = -1;
     private long threadSleep = -1;
 
-    private List<PlayerListener> listeners;
+    private List<IPlayerListener> listeners;
     private Map<String, Object> emptyProperties = new HashMap<>();
 
     public AudioPlayer()
@@ -68,17 +68,17 @@ public class AudioPlayer implements Runnable
         panControl = null;
     }
 
-    public void addPlayerListener(PlayerListener listener)
+    public void addPlayerListener(IPlayerListener listener)
     {
         listeners.add(listener);
     }
 
-    public List<PlayerListener> getListeners()
+    public List<IPlayerListener> getListeners()
     {
         return listeners;
     }
 
-    public void removePlayerListener(PlayerListener listener)
+    public void removePlayerListener(IPlayerListener listener)
     {
         listeners.remove(listener);
     }
@@ -513,7 +513,7 @@ public class AudioPlayer implements Runnable
 
                             line.write(buffer, 0, bytesRead);
 
-                            for (PlayerListener listener : listeners)
+                            for (IPlayerListener listener : listeners)
                             {
                                 listener.progress(encodedBytes, line.getMicrosecondPosition(), buffer, emptyProperties);
                             }
@@ -623,7 +623,7 @@ public class AudioPlayer implements Runnable
     {
         PlayerEvent event = new PlayerEvent(code, position, value, description);
 
-        for (PlayerListener listener : listeners)
+        for (IPlayerListener listener : listeners)
         {
             switch (code)
             {

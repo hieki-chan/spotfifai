@@ -5,6 +5,7 @@
 package spotfifai.controller;
 
 import spotfifai.dao.PlaylistDAO;
+import spotfifai.dao.PlaylistDetailDAO;
 import spotfifai.models.Playlist;
 import spotfifai.util.located.IService;
 
@@ -14,11 +15,17 @@ import spotfifai.util.located.IService;
  */
 public class PlaylistsController implements IService
 {
-    private PlaylistDAO playlistDAO;
+    private final PlaylistDAO playlistDAO;
+    private final PlaylistDetailDAO playlistDetailDAO;
     
-    public PlaylistsController(PlaylistDAO playlistDAO)
+    Playlist currentPlaylist;
+    
+    public PlaylistsController(
+            PlaylistDAO playlistDAO,
+            PlaylistDetailDAO playlistDetailDAO)
     {
         this.playlistDAO = playlistDAO;
+        this.playlistDetailDAO = playlistDetailDAO;
     }
     
     public void onCreateNew()
@@ -31,6 +38,11 @@ public class PlaylistsController implements IService
     public void onDelete()
     {
         playlistDAO.delete();
+    }
+    
+    public void removeSongFromPlaylist()
+    {
+        
     }
     
     private String getNewPlaylistName()

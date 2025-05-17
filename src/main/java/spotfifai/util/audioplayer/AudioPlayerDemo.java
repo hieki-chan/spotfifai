@@ -45,7 +45,7 @@ public class AudioPlayerDemo
         }
     }
 
-    public static class SimplePlayerListener implements PlayerListener
+    public static class SimplePlayerListener implements IPlayerListener
     {
 
         @Override

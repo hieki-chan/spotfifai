@@ -4,25 +4,18 @@
  */
 package spotfifai.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import spotfifai.dbengine.DBConnector;
 import spotfifai.dbengine.JDBQuery;
 import spotfifai.models.Song;
-import spotfifai.util.located.ServiceLocator;
 
 /**
  *
  * @author admin
  */
-public class SongDAO extends BaseDAO<Song>
+public final class SongDAO extends BaseDAO<Song>
 {
 
     public SongDAO()
@@ -31,24 +24,19 @@ public class SongDAO extends BaseDAO<Song>
     }
 
     @Override
-    Map<Integer, Song> querySelector()
+    void onQuerySelector()
     {
-        Map<Integer, Song> result = new HashMap<>();
-
-        Connection connection = super.getConnection();
-
         final String sql = "SELECT * FROM Song";
-        JDBQuery.selectAllFrom(connection, sql, (rs) ->
+        
+        JDBQuery.selectAllFrom(super.getConnection(), sql, (rs) ->
         {
             Song song = new Song(
                     rs.getInt(1),
                     rs.getString(2),
                     rs.getString(3)
             );
-            result.put(song.hashCode(), song);
+            addToCacheInternal(song);
         });
-
-        return result;
     }
 
     @Override
@@ -66,16 +54,17 @@ public class SongDAO extends BaseDAO<Song>
     @Override
     public void add(Song entity)
     {
-        Connection connection = super.getConnection();
-
+        if(contains(entity))
+            return;
+                
         final String sql = "INSERT INTO Song (name, description) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql))
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
             stmt.setString(1, entity.getName());
             stmt.setString(2, entity.getDescription());
             stmt.executeUpdate();
 
-            cachedEntities.put(entity.hashCode(), entity);
+            addToCacheInternal(entity);
 
         } catch (SQLException ex)
         {

@@ -10,21 +10,21 @@ import java.util.logging.Logger;
 import spotfifai.ui.MainFrame;
 import spotfifai.util.audioplayer.AudioPlayer;
 import spotfifai.util.audioplayer.PlayerException;
-import spotfifai.util.audioplayer.PlayerListener;
 import spotfifai.util.located.IService;
+import spotfifai.util.audioplayer.IPlayerListener;
 
 /**
  *
  * @author admin
  */
-public class MusicPlayerController implements PlayerListener, IService
+public class MusicPlayerController implements IPlayerListener, IService
 {
     AudioPlayer audioPlayer;
     boolean loop;
 
-    public MusicPlayerController()
+    public MusicPlayerController(AudioPlayer audioPlayer)
     {
-        audioPlayer = new AudioPlayer();
+        this.audioPlayer = audioPlayer;
         // Add a basic listener
         audioPlayer.addPlayerListener(this);
         try
@@ -65,7 +65,7 @@ public class MusicPlayerController implements PlayerListener, IService
     {
         long audioMicrosecondLength = audioPlayer.getMaxMicrosecondPosition();
         long microsecondPosition = (long) (ratio * audioMicrosecondLength);
-        System.out.println(microsecondPosition);
+        //System.out.println(microsecondPosition);
         try
         {
 

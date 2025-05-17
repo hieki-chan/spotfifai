@@ -17,12 +17,12 @@ import java.util.logging.Logger;
  */
 public class JDBQuery
 {
-    public static void selectAllFrom(Connection connection, String sql, IQueryResult onResultRead)
+    public static void selectAllFrom(Connection connection, String selectAllSql, IQueryResult onResultRead)
     {
         try
         {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            ResultSet resultSet = statement.executeQuery(selectAllSql);
             while (resultSet.next())
             {
                 // callback

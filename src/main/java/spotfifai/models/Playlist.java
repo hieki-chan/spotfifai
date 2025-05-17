@@ -32,4 +32,16 @@ public class Playlist
     {
         
     }
+
+    public int getPlaylistId()
+    {
+        return playlistId;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+    
+    
 }

@@ -17,17 +17,23 @@ import spotfifai.util.located.ServiceLocator;
  */
 public abstract class BaseDAO<T>
 {
-    protected Map<Integer, T> cachedEntities = new HashMap<>();
+    private final Map<Integer, T> cachedEntities;
     
     protected  BaseDAO()
     {
-        cachedEntities = querySelector();
+        cachedEntities = new HashMap<>();
+        initialize();
     }
     
-    abstract Map<Integer, T> querySelector();
+    abstract void onQuerySelector();
     abstract void update();
     abstract void delete();
     abstract void add(T entity);
+    
+    private void initialize()
+    {
+        onQuerySelector();
+    }
     
     public void saveChanges()
     {
@@ -42,6 +48,16 @@ public abstract class BaseDAO<T>
     public int getCount()
     {
         return cachedEntities.size();
+    }
+    
+    protected void addToCacheInternal(T entity)
+    {
+        cachedEntities.put(entity.hashCode(), entity);
+    }
+    
+    public boolean contains(T entity)
+    {
+        return cachedEntities.containsKey(entity.hashCode());
     }
     
     protected Connection getConnection()

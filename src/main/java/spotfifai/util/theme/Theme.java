@@ -7,8 +7,8 @@ package spotfifai.util.theme;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import java.awt.Color;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -41,4 +41,9 @@ public final class Theme
             System.err.println("Failed to initialize FlatLaf");
         }
     }
+    
+    
+    public static final Color DARK_COLOR = new Color(35, 35, 35, 255);
+    public static final Color DARKER_COLOR = new Color(30, 30, 30, 255);
+    public static final Color GRAY_DARK_COLOR = new Color(45, 45, 45, 255);
 }

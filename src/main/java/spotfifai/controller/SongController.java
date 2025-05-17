@@ -16,13 +16,23 @@ import spotfifai.util.located.IService;
  */
 public class SongController implements IService
 {
-    private SongDAO songDAO;
-    private UserDAO userDAO;
+    private final SongDAO songDAO;
+    private final UserDAO userDAO;
     
     public SongController(SongDAO songDAO, UserDAO userDAO)
     {
         this.songDAO = songDAO;
         this.userDAO = userDAO;
+    }
+    
+    public void upload(Song song)
+    {
+        songDAO.add(song);
+    }
+    
+    public void removeSong()
+    {
+        
     }
     
     public String getArtistNameFromSong(Song song)

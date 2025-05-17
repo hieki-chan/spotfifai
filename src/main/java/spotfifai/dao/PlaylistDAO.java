@@ -4,9 +4,10 @@
  */
 package spotfifai.dao;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import spotfifai.dbengine.JDBQuery;
 import spotfifai.models.Playlist;
 
@@ -14,34 +15,27 @@ import spotfifai.models.Playlist;
  *
  * @author admin
  */
-public class PlaylistDAO extends BaseDAO<Playlist>
+public final class PlaylistDAO extends BaseDAO<Playlist>
 {
-
     public PlaylistDAO()
     {
         super();
     }
 
     @Override
-    Map<Integer, Playlist> querySelector()
+    void onQuerySelector()
     {
-        Map<Integer, Playlist> result = new HashMap<>();
-
-        Connection connection = super.getConnection();
-
         final String sql = "SELECT * FROM Playlist";
 
-        JDBQuery.selectAllFrom(connection, sql, (rs) ->
+        JDBQuery.selectAllFrom(super.getConnection(), sql, (rs) ->
         {
-            Playlist song = new Playlist(
+            Playlist playlist = new Playlist(
                     rs.getInt(1),
                     rs.getString(2),
                     null
             );
-            result.put(song.hashCode(), song);
+           addToCacheInternal(playlist);
         });
-
-        return result;
     }
 
     @Override
@@ -59,7 +53,20 @@ public class PlaylistDAO extends BaseDAO<Playlist>
     @Override
     public void add(Playlist entity)
     {
+        if(contains(entity))
+            return;
+        
+        final String sql = "INSERT INTO Playlist () VALUES (?, ?)";
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setString(1, entity.getName());
+            stmt.executeUpdate();
 
+            addToCacheInternal(entity);
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(PlaylistDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-
 }
