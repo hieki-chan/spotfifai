@@ -4,11 +4,13 @@
  */
 package spotfifai.dao;
 
+import spotfifai.models.PlaylistDetail;
+
 /**
  *
  * @author admin
  */
-public class PlaylistDetailDAO extends BaseDAO<PlaylistDetailDAO>
+public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
 {
 
     @Override
@@ -18,21 +20,21 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetailDAO>
     }
 
     @Override
-    void update()
+    boolean update(PlaylistDetail entity)
     {
-        
+        return false;
     }
 
     @Override
-    void delete()
+    boolean delete(PlaylistDetail entity)
     {
-        
+        return false;
     }
 
     @Override
-    void add(PlaylistDetailDAO entity)
+    boolean add(PlaylistDetail entity)
     {
-        
+        return false;
     }
     
 }

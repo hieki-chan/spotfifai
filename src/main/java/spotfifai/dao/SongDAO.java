@@ -27,48 +27,94 @@ public final class SongDAO extends BaseDAO<Song>
     void onQuerySelector()
     {
         final String sql = "SELECT * FROM Song";
-        
+
         JDBQuery.selectAllFrom(super.getConnection(), sql, (rs) ->
         {
             Song song = new Song(
-                    rs.getInt(1),
-                    rs.getString(2),
-                    rs.getString(3)
+                    rs.getString("songId"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getBytes("audioData")
             );
             addToCacheInternal(song);
         });
     }
 
     @Override
-    public void update()
+    public boolean update(Song entity)
     {
+        final String sql = "UPDATE Song SET title = ?, description = ?, audioData = ? WHERE songId = ?";
 
-    }
-
-    @Override
-    public void delete()
-    {
-
-    }
-
-    @Override
-    public void add(Song entity)
-    {
-        if(contains(entity))
-            return;
-                
-        final String sql = "INSERT INTO Song (name, description) VALUES (?, ?)";
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
-            stmt.setString(1, entity.getName());
+            stmt.setString(1, entity.getTitle());
             stmt.setString(2, entity.getDescription());
-            stmt.executeUpdate();
+            stmt.setBytes(3, entity.getAudioData());
+            stmt.setString(4, entity.getSongId());
 
-            addToCacheInternal(entity);
+            int affected = stmt.executeUpdate();
+
+            if (affected > 0)
+            {
+                // updated
+                addToCacheInternal(entity);
+                return true;
+            }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(SongDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean delete(Song entity)
+    {
+        final String sql = "DELETE FROM Song WHERE songId = ?";
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setString(1, entity.getSongId());
+            int affected = stmt.executeUpdate();
+
+            if (affected > 0)
+            {
+                removeFromCacheInternal(entity);
+                return true;
+            }
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(SongDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean add(Song entity)
+    {
+        if (contains(entity))
+        {
+            return false;
+        }
+
+        final String sql = "INSERT INTO Song (songId, title, description, audioData) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setString(1, entity.getSongId());
+            stmt.setString(2, entity.getTitle());
+            stmt.setString(3, entity.getDescription());
+            stmt.setBytes(4, entity.getAudioData());
+            stmt.executeUpdate();
+
+            addToCacheInternal(entity);
+            return true;
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(SongDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
 }

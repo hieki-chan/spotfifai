@@ -28,16 +28,29 @@ public class PlaylistsController implements IService
         this.playlistDetailDAO = playlistDetailDAO;
     }
     
-    public void onCreateNew()
+    public PlaylistDAO getPlaylistDAO()
+    {
+        return playlistDAO;
+    }
+    
+    public Playlist onCreateNew()
     {
         Playlist newPlaylist = new Playlist(getNewPlaylistName());
         
-        playlistDAO.add(newPlaylist);
+        if(playlistDAO.add(newPlaylist))
+        {
+            return newPlaylist;
+        }
+        
+        return null;
     }
     
-    public void onDelete()
+    public boolean onDelete()
     {
-        playlistDAO.delete();
+        if(currentPlaylist == null)
+            return false;
+        
+        return playlistDAO.delete(currentPlaylist);
     }
     
     public void removeSongFromPlaylist()

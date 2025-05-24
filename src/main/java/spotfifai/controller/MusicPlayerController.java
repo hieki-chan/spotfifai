@@ -4,10 +4,14 @@
  */
 package spotfifai.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import spotfifai.ui.MainFrame;
+import spotfifai.models.Song;
 import spotfifai.util.audioplayer.AudioPlayer;
 import spotfifai.util.audioplayer.PlayerException;
 import spotfifai.util.located.IService;
@@ -19,8 +23,13 @@ import spotfifai.util.audioplayer.IPlayerListener;
  */
 public class MusicPlayerController implements IPlayerListener, IService
 {
+
     AudioPlayer audioPlayer;
+    Song currentSong;
+    File tempFile;
     boolean loop;
+
+    IMusicListenter musicListener;
 
     public MusicPlayerController(AudioPlayer audioPlayer)
     {
@@ -38,12 +47,57 @@ public class MusicPlayerController implements IPlayerListener, IService
         }
     }
 
-    public void play()
+    public void setListener(IMusicListenter musicListener)
+    {
+        this.musicListener = musicListener;
+    }
+
+    public float getAudioLength()
+    {
+        return audioPlayer.getMaxMicrosecondPosition();
+    }
+
+    public void play(Song song)
+    {
+        if (song == currentSong)
+        {
+            return;
+        }
+
+        if (tempFile != null)
+        {
+            tempFile.delete();
+        }
+        try
+        {
+            byte[] audioBytes = song.getAudioData();
+
+            tempFile = File.createTempFile("music", ".wav");
+
+            try (FileOutputStream fos = new FileOutputStream(tempFile))
+            {
+                fos.write(audioBytes);
+            }
+
+            audioPlayer.open(tempFile);
+            audioPlayer.play();
+            currentSong = song;
+
+        } catch (IOException ex)
+        {
+            Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (PlayerException ex)
+        {
+            Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void resume()
     {
         try
         {
             audioPlayer.resume();
-            audioPlayer.play();
+            //audioPlayer.play();
         } catch (PlayerException ex)
         {
             Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
@@ -94,6 +148,16 @@ public class MusicPlayerController implements IPlayerListener, IService
     {
         System.out.println("Opened: " + dataSource);
         System.out.println("Format properties: " + properties);
+        if (properties.size() == 0)
+        {
+            return;
+        }
+        if (musicListener != null && currentSong != null)
+        {
+            float duration = (Float) properties.get("audio.duration.seconds");
+
+            musicListener.onOpen(currentSong, duration);
+        }
     }
 
     @Override
@@ -134,6 +198,12 @@ public class MusicPlayerController implements IPlayerListener, IService
             {
                 Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else
+        {
+//            if (tempFile != null)
+//            {
+//                tempFile.delete();
+//            }
         }
     }
 

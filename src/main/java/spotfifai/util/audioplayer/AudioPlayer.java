@@ -204,14 +204,28 @@ public class AudioPlayer implements Runnable
 
             properties.put("audioplayer.sourcedataline", line);
 
-//            for (PlayerListener listener : listeners)
-//            {
-//                listener.opened(dataSource, properties);
-//            }
             maxMicrosecondPosition = audioFileFormat.getByteLength();
+
+            // duration
+            float durationInSeconds = -1;
+
+            if (audioFileFormat.getFrameLength() > 0 && audioFormat.getFrameRate() > 0)
+            {
+                durationInSeconds = audioFileFormat.getFrameLength() / audioFormat.getFrameRate();
+            } else if (audioFileFormat.getByteLength() > 0 && audioFormat.getFrameSize() > 0 && audioFormat.getFrameRate() > 0)
+            {
+                durationInSeconds = audioFileFormat.getByteLength() / (audioFormat.getFrameSize() * audioFormat.getFrameRate());
+            }
+            properties.put("audio.duration.seconds", durationInSeconds);
 
             status = OPENED;
             notifyEvent(PlayerEvent.OPENED, getEncodedStreamPosition(), -1, null);
+
+            for (var listener : listeners)
+            {
+                listener.opened(dataSource, properties);
+            }
+
         } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e)
         {
             throw new PlayerException(e);
@@ -889,20 +903,16 @@ public class AudioPlayer implements Runnable
 
     public void close()
     {
-        // Dừng phát nhạc và thread
         stopPlayback();
 
-        // Interrupt thread nếu đang chạy
         if (playerThread != null && playerThread.isAlive())
         {
             playerThread.interrupt();
             playerThread = null;
         }
 
-        // Đóng stream
         closeStream();
 
-        // Đóng line
         if (line != null)
         {
             line.flush();
@@ -911,7 +921,6 @@ public class AudioPlayer implements Runnable
             line = null;
         }
 
-        // Reset trạng thái
         reset();
     }
 }

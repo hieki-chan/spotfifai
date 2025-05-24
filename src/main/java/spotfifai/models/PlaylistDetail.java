@@ -8,7 +8,7 @@ package spotfifai.models;
  *
  * @author admin
  */
-public class PlaylistDetal
+public class PlaylistDetail
 {
     
 }

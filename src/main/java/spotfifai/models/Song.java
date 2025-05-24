@@ -4,6 +4,9 @@
  */
 package spotfifai.models;
 
+import java.util.Objects;
+import java.util.UUID;
+
 /**
  *
  * @author admin
@@ -11,48 +14,91 @@ package spotfifai.models;
 public class Song
 {
 
-    private int id;
-    private String name;
+    private String songId;
+    private String title;
     private String description;
     private String artistId;
+    private byte[] audioData;
 
-    public Song(int id, String name, String description)
+    public Song(String songId, String title, String description, byte[] audioData)
     {
-        this.id = id;
-        this.name = name;
+        this.songId = songId;
+        this.title = title;
         this.description = description;
-    }
-    
-    public Song(String name, String description)
-    {
-        this(0, name, description);
+        this.audioData = audioData;
     }
 
-    public String getName()
+    public Song(String title, String description, byte[] audioData)
     {
-        return name;
+        String uid = UUID.randomUUID().toString().substring(0, 20);
+        this(uid, title, description, audioData);
+    }
+
+    public Song()
+    {
+        this("New song...", "description...", null);
+    }
+
+    public Song(Song other)
+    {
+        this(other.songId, other.title, other.description, other.audioData);
+    }
+
+    public String getSongId()
+    {
+        return songId;
+    }
+
+    public String getTitle()
+    {
+        return title;
     }
 
     public String getDescription()
     {
         return description;
     }
-    
+
     public int getArtistId()
     {
         return artistId.hashCode();
     }
 
+    public byte[] getAudioData()
+    {
+        return audioData;
+    }
+
+    public void setSongId(String songId)
+    {
+        this.songId = songId;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    public void setAudioData(byte[] audioData)
+    {
+        this.audioData = audioData;
+    }
+
     @Override
     public String toString()
     {
-        return "Song{" + "id=" + id + ", name=" + name + ", description=" + description + '}';
+        return "Song{" + "id=" + songId + ", name=" + title + ", description=" + description + '}';
     }
 
     @Override
     public int hashCode()
     {
-        return id;
+        return Objects.hashCode(this.songId);
     }
 
     @Override
@@ -71,7 +117,6 @@ public class Song
             return false;
         }
         final Song other = (Song) obj;
-        return this.id == other.id;
+        return this.songId == other.songId;
     }
-
 }

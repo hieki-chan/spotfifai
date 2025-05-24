@@ -19,21 +19,21 @@ public class UserDAO extends BaseDAO<User>
     }
 
     @Override
-    public void update()
+    public boolean update(User entity)
     {
-        
+        return false;
     }
 
     @Override
-    public void delete()
+    public boolean delete(User entity)
     {
-        
+        return false;
     }
 
     @Override
-    public void add(User entity)
+    public boolean add(User entity)
     {
-        
+        return false;
     }
     
 }

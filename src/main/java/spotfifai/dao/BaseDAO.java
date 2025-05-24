@@ -5,8 +5,12 @@
 package spotfifai.dao;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import spotfifai.dbengine.DBConnector;
 import spotfifai.util.located.ServiceLocator;
 
@@ -18,56 +22,91 @@ import spotfifai.util.located.ServiceLocator;
 public abstract class BaseDAO<T>
 {
     private final Map<Integer, T> cachedEntities;
-    
-    protected  BaseDAO()
+    List<IDAOListener> listeners;
+
+    protected BaseDAO()
     {
         cachedEntities = new HashMap<>();
+        listeners = new ArrayList<>();
         initialize();
     }
-    
+
     abstract void onQuerySelector();
-    abstract void update();
-    abstract void delete();
-    abstract void add(T entity);
-    
+
+    abstract boolean update(T entity);
+
+    abstract boolean delete(T entity);
+
+    abstract boolean add(T entity);
+
     private void initialize()
     {
         onQuerySelector();
     }
     
+    public void addListener(IDAOListener listener)
+    {
+        listeners.add(listener);
+    }
+    
+    public void notifyAllListeners()
+    {
+        for(var l : listeners)
+        {
+            l.onChanged();
+        }
+    }
+
     public void saveChanges()
     {
-        
+
     }
-    
-    public T get(Integer hashCode)
+
+    public T getEntity(Integer idInteger)
     {
-        return cachedEntities.get(hashCode);
+        return cachedEntities.get(idInteger);
     }
-    
+
+    public T getEntity(String idString)
+    {
+        return getEntity(Objects.hashCode(idString));
+    }
+
+    public Collection<T> getEntitiesAll()
+    {
+        return cachedEntities.values();
+    }
+
     public int getCount()
     {
         return cachedEntities.size();
     }
-    
+
     protected void addToCacheInternal(T entity)
     {
         cachedEntities.put(entity.hashCode(), entity);
+        notifyAllListeners();
     }
-    
+
+    protected void removeFromCacheInternal(T entity)
+    {
+        cachedEntities.remove(entity.hashCode());
+        notifyAllListeners();
+    }
+
     public boolean contains(T entity)
     {
         return cachedEntities.containsKey(entity.hashCode());
     }
-    
+
     protected Connection getConnection()
     {
         return ServiceLocator.get(DBConnector.class).getConnection();
     }
-    
+
     public void debug()
     {
-        for(T entity : cachedEntities.values())
+        for (T entity : cachedEntities.values())
         {
             System.out.println(entity);
         }

@@ -2,7 +2,6 @@
 
 USE SPOTFIFAI
 
-DROP TABLE [User]
 CREATE TABLE [User]
 (
 	userId CHAR(10) NOT NULL PRIMARY KEY,
@@ -11,31 +10,23 @@ CREATE TABLE [User]
 )
 
 
-DROP TABLE SONG
 CREATE TABLE SONG
 (
 	songId NVARCHAR(20) NOT NULL PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL,
-	description NVARCHAR,
+    title NVARCHAR(100) NOT NULL,
+	description NVARCHAR(500),
+	audioData VARBINARY(MAX),
 	userId CHAR(10) FOREIGN KEY REFERENCES [User](userId)
 )
 
 
-INSERT INTO SONG (name, description) 
-VALUES (N'Bohemian Rhapsody', N'Một bản nhạc huyền thoại của Queen.');
-
-
-SELECT * FROM SONG
-
-DROP TABLE Playlist
 CREATE TABLE Playlist
 (
-	playlistId INT NOT NULL PRIMARY KEY,
-    name NVARCHAR(100),
+	playlistId INT PRIMARY KEY IDENTITY (1,1),
+    title NVARCHAR(100),
 	userId CHAR(10) FOREIGN KEY REFERENCES [User](userId)
 )
 
-DROP TABLE PlaylistDetail
 CREATE TABLE PlaylistDetail
 (
 	playlistId INT NOT NULL,
@@ -50,3 +41,5 @@ DROP TABLE PlaylistDetail
 DROP TABLE Playlist
 DROP TABLE Song
 DROP TABLE [User]
+
+SELECT * FROM SONG

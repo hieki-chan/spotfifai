@@ -4,6 +4,13 @@
  */
 package spotfifai.ui;
 
+import javax.swing.JCheckBox;
+import javax.swing.table.DefaultTableModel;
+import spotfifai.controller.SongDistributorController;
+import spotfifai.models.Song;
+import spotfifai.ui.songeditor.SongEditorDialog;
+import spotfifai.util.located.ServiceLocator;
+
 /**
  *
  * @author admin
@@ -11,12 +18,81 @@ package spotfifai.ui;
 public class DistributionForm extends javax.swing.JPanel
 {
 
+    SongDistributorController songDistributor;
+    Song selectedSong;
+
     /**
      * Creates new form DistributionForm
      */
     public DistributionForm()
     {
         initComponents();
+
+        songDistributor = ServiceLocator.get(SongDistributorController.class);
+        songDistributor.getSongDAO().addListener(() ->
+        {
+            loadSongs();
+        });
+
+        tableSelectionEvt();
+        loadSongs();
+        showSongInfo("Sample title", "Sample description, tell about your song here...");
+    }
+
+    private void tableSelectionEvt()
+    {
+        tableSongs.getSelectionModel().addListSelectionListener(s ->
+        {
+            if (!s.getValueIsAdjusting())
+            {
+                int selectedRow = tableSongs.getSelectedRow();
+                if (selectedRow != -1)
+                {
+                    String songId = (String) tableSongs.getValueAt(selectedRow, 0);
+                    selectedSong = songDistributor.getSongDAO().getEntity(songId);
+                    showSongInfo(selectedSong.getTitle(), selectedSong.getDescription());
+                }
+            }
+        });
+    }
+
+    private void loadSongs()
+    {
+        DefaultTableModel tableModel = (DefaultTableModel) tableSongs.getModel();
+        tableModel.setRowCount(0);
+
+        int i = 0;
+        int selectedIndex = 0;
+        for (Song song : songDistributor.getSongDAO().getEntitiesAll())
+        {
+            tableModel.addRow(new Object[]
+            {
+                song.getSongId(), song.getTitle(), song.getDescription(), "Play"
+            });
+
+            if (selectedSong != null && selectedSong.equals(song))
+            {
+                selectedIndex = i;
+            }
+
+            i++;
+        }
+
+        tableSongs.setModel(tableModel);
+        
+        tableSongs.getColumn("Play").setCellRenderer(new ButtonRenderer());
+        tableSongs.getColumn("Play").setCellEditor(new ButtonEditor(new JCheckBox(), tableSongs));
+    
+        if (tableModel.getRowCount() > 0)
+        {
+            tableSongs.setRowSelectionInterval(selectedIndex, selectedIndex);
+        }
+    }
+
+    private void showSongInfo(String songTitle, String songDescription)
+    {
+        labelSongTitle.setText("<html>" + songTitle + "</html>");
+        labelSongDescription.setText("<html>" + songDescription + "</html>");
     }
 
     /**
@@ -29,19 +105,199 @@ public class DistributionForm extends javax.swing.JPanel
     private void initComponents()
     {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tableSongs = new javax.swing.JTable();
+        buttonPublishNewSong = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        labelSongTitle = new javax.swing.JLabel();
+        buttonDeleteSelected = new javax.swing.JButton();
+        buttonEditSelected = new javax.swing.JButton();
+        labelSongDescription = new javax.swing.JLabel();
+
+        setOpaque(false);
+
+        tableSongs.setAutoCreateRowSorter(true);
+        tableSongs.setBackground(new java.awt.Color(45, 45, 45));
+        tableSongs.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tableSongs.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][]
+            {
+                {null, null, null, null}
+            },
+            new String []
+            {
+                "UID", "Title", "Description", "Play"
+            }
+        )
+        {
+            boolean[] canEdit = new boolean []
+            {
+                false, false, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex)
+            {
+                return canEdit [columnIndex];
+            }
+        });
+        tableSongs.setColumnSelectionAllowed(true);
+        tableSongs.setInheritsPopupMenu(true);
+        tableSongs.setMinimumSize(new java.awt.Dimension(225, 25));
+        tableSongs.setRowHeight(30);
+        tableSongs.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(tableSongs);
+        tableSongs.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (tableSongs.getColumnModel().getColumnCount() > 0)
+        {
+            tableSongs.getColumnModel().getColumn(0).setMinWidth(50);
+            tableSongs.getColumnModel().getColumn(0).setMaxWidth(200);
+            tableSongs.getColumnModel().getColumn(1).setMinWidth(80);
+            tableSongs.getColumnModel().getColumn(2).setMinWidth(80);
+            tableSongs.getColumnModel().getColumn(3).setResizable(false);
+            tableSongs.getColumnModel().getColumn(3).setPreferredWidth(80);
+        }
+
+        buttonPublishNewSong.setText("Publish a new song");
+        buttonPublishNewSong.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonPublishNewSongActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setText("Your songs:");
+
+        jPanel1.setBackground(new java.awt.Color(45, 45, 45));
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
+        jLabel2.setPreferredSize(new java.awt.Dimension(150, 150));
+
+        labelSongTitle.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        labelSongTitle.setForeground(new java.awt.Color(255, 255, 255));
+        labelSongTitle.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        labelSongTitle.setText("A Thoudsand Year");
+        labelSongTitle.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+
+        buttonDeleteSelected.setText("Delete");
+        buttonDeleteSelected.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonDeleteSelectedActionPerformed(evt);
+            }
+        });
+
+        buttonEditSelected.setText("Edit");
+        buttonEditSelected.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonEditSelectedActionPerformed(evt);
+            }
+        });
+
+        labelSongDescription.setForeground(new java.awt.Color(255, 255, 255));
+        labelSongDescription.setText("description here...");
+        labelSongDescription.setToolTipText("");
+        labelSongDescription.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(35, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelSongDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(buttonEditSelected)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buttonDeleteSelected)))
+                .addContainerGap(35, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(labelSongDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(buttonEditSelected)
+                    .addComponent(buttonDeleteSelected))
+                .addGap(33, 33, 33))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(buttonPublishNewSong)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonPublishNewSong, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void buttonDeleteSelectedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonDeleteSelectedActionPerformed
+    {//GEN-HEADEREND:event_buttonDeleteSelectedActionPerformed
+        if (selectedSong != null)
+            songDistributor.deleteSong(selectedSong);
+    }//GEN-LAST:event_buttonDeleteSelectedActionPerformed
+
+    private void buttonPublishNewSongActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonPublishNewSongActionPerformed
+    {//GEN-HEADEREND:event_buttonPublishNewSongActionPerformed
+        // TODO add your handling code here:
+        var publisher = new SongEditorDialog("Song Editor", this, null);
+        publisher.show();
+    }//GEN-LAST:event_buttonPublishNewSongActionPerformed
+
+    private void buttonEditSelectedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonEditSelectedActionPerformed
+    {//GEN-HEADEREND:event_buttonEditSelectedActionPerformed
+        var editor = new SongEditorDialog("Song Publisher", this, selectedSong);
+        editor.show();
+    }//GEN-LAST:event_buttonEditSelectedActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonDeleteSelected;
+    private javax.swing.JButton buttonEditSelected;
+    private javax.swing.JButton buttonPublishNewSong;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelSongDescription;
+    private javax.swing.JLabel labelSongTitle;
+    private javax.swing.JTable tableSongs;
     // End of variables declaration//GEN-END:variables
 }

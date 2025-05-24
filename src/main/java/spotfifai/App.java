@@ -22,7 +22,7 @@ public class App
 
     public static void main(String[] args)
     {
-        // register dbengine, controllers, etc
+        // register dbengine, controllers, etc...
         installServices();
 
         // dark theme
@@ -35,17 +35,21 @@ public class App
     
     static void installServices()
     {
-        ServiceLocator.register(new DBConnector());
+        // Music player
+        AudioPlayer audioPlayer = new AudioPlayer();
+        ServiceLocator.register(new MusicPlayerController(audioPlayer));
         
+        // JDBC
+        ServiceLocator.register(new DBConnector());
+
+        // DAOs
         var songDAO = new SongDAO();
         var userDAO = new UserDAO();
         var playlistDAO = new PlaylistDAO();
         var playlisyDetailDAO = new PlaylistDetailDAO();
         
-        ServiceLocator.register(new SongController(songDAO, userDAO));
+        ServiceLocator.register(new SongDistributorController(songDAO, userDAO));
         ServiceLocator.register(new PlaylistsController(playlistDAO, playlisyDetailDAO));
-        
-        AudioPlayer audioPlayer = new AudioPlayer();
-        ServiceLocator.register(new MusicPlayerController(audioPlayer));
+        ServiceLocator.register(new HomeController(songDAO));
     }
 }

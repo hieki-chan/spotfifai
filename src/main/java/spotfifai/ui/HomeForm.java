@@ -7,6 +7,9 @@ package spotfifai.ui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import spotfifai.controller.HomeController;
+import spotfifai.models.Song;
+import spotfifai.util.located.ServiceLocator;
 
 /**
  *
@@ -14,24 +17,28 @@ import java.awt.Insets;
  */
 public class HomeForm extends javax.swing.JPanel
 {
-
+    final HomeController homeController;
     /**
      * Creates new form HomeForm
      */
     public HomeForm()
     {
         initComponents();
+        
+        homeController = ServiceLocator.get(HomeController.class);
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); // Khoảng cách giữa các item
+        gbc.insets = new Insets(5, 5, 5, 5); 
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1; // Giãn ngang
+        gbc.weightx = 1;
 
-        int cols = 3; // Số cột
-        for (int i = 0; i < 20; i++)
+        int cols = 3; 
+        var topSongs = homeController.loadTopSongs();
+        for (int i = 0; i < topSongs.size(); i++)
         {
-            var musicItem = new MusicItemForm();
+            Song song = topSongs.get(i);
+            var musicItem = new MusicItemForm(song);
             gbc.gridx = i % cols;
             gbc.gridy = i / cols;
             this.add(musicItem, gbc);

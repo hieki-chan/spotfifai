@@ -14,15 +14,20 @@ import spotfifai.util.located.IService;
  *
  * @author admin
  */
-public class SongController implements IService
+public class SongDistributorController implements IService
 {
     private final SongDAO songDAO;
     private final UserDAO userDAO;
-    
-    public SongController(SongDAO songDAO, UserDAO userDAO)
+        
+    public SongDistributorController(SongDAO songDAO, UserDAO userDAO)
     {
         this.songDAO = songDAO;
         this.userDAO = userDAO;
+    }
+    
+    public SongDAO getSongDAO()
+    {
+        return songDAO;
     }
     
     public void upload(Song song)
@@ -30,14 +35,15 @@ public class SongController implements IService
         songDAO.add(song);
     }
     
-    public void removeSong()
+    
+    public void deleteSong(Song song)
     {
-        
+        songDAO.delete(song);
     }
     
     public String getArtistNameFromSong(Song song)
     {
-        User artist = userDAO.get(song.getArtistId());
+        User artist = userDAO.getEntity(song.getArtistId());
         return artist.getUsername();
     }
 }

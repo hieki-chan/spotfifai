@@ -4,10 +4,13 @@
  */
 package spotfifai.ui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 /**
@@ -16,13 +19,16 @@ import javax.swing.JPanel;
  */
 public final class TabViewSystem
 {
-
     private JPanel contentContainer;
+    private final List<MenuItemForm> menuItems;
+    MenuItemForm selectedMenuItem;
     private final Map<Class<?>, JPanel> tabbedContents;
 
     public TabViewSystem(JPanel contentContainer)
     {
         this.contentContainer = contentContainer;
+        contentContainer.setLayout(new BoxLayout(contentContainer, BoxLayout.Y_AXIS));
+        menuItems = new ArrayList<>();
         tabbedContents = new HashMap<>();
     }
 
@@ -41,6 +47,26 @@ public final class TabViewSystem
         var tabToShow = tabbedContents.get(tab);
         
         showContent(tabToShow);
+    }
+    
+    public void addMenuItem(MenuItemForm menuItem)
+    {
+        menuItems.add(menuItem);
+        
+        menuItem.setOnSelected(() ->
+        {
+            setSelect(menuItem);
+        });
+    }
+    
+    public void setSelect(MenuItemForm menuItem)
+    {
+        for(var item : menuItems)
+        {
+            item.setSelection(false);
+        }
+        
+        menuItem.setSelection(true);
     }
 
     private void showContent(JPanel tabToShow)

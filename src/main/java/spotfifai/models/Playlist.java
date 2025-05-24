@@ -12,25 +12,26 @@ import java.util.List;
  */
 public class Playlist
 {
+
     private int playlistId;
-    private String name;
+    private String title;
     private List<Integer> songIds;
 
     public Playlist(int playlistId, String name, List<Integer> songIds)
     {
         this.playlistId = playlistId;
-        this.name = name;
+        this.title = name;
         this.songIds = songIds;
     }
 
     public Playlist(String name)
     {
-        this.name = name;
+        this.title = name;
     }
-    
+
     public Playlist()
     {
-        
+
     }
 
     public int getPlaylistId()
@@ -38,10 +39,14 @@ public class Playlist
         return playlistId;
     }
 
-    public String getName()
+    public void setPlaylistId(int playlistId)
     {
-        return name;
+        this.playlistId = playlistId;
     }
-    
-    
+
+    public String getTitle()
+    {
+        return title;
+    }
+
 }

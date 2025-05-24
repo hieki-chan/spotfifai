@@ -4,20 +4,30 @@
  */
 package spotfifai.ui;
 
+import spotfifai.controller.MusicPlayerController;
+import spotfifai.models.Song;
+import spotfifai.util.located.ServiceLocator;
+
 /**
  *
  * @author admin
  */
 public class MusicItemForm extends javax.swing.JPanel
 {
-
+    MusicPlayerController musicPlayer;
+    Song song;
     /**
      * Creates new form MusicItemForm
      */
-    public MusicItemForm()
+    public MusicItemForm(Song song)
     {
         initComponents();
         this.setSize(100, 100);
+        this.musicPlayer = ServiceLocator.get(MusicPlayerController.class);
+        this.song = song;
+        
+        labelSongTitle.setText(song.getTitle());
+        labelArtistName.setText(song.getDescription());
     }
 
     
@@ -31,47 +41,86 @@ public class MusicItemForm extends javax.swing.JPanel
     private void initComponents()
     {
 
+        panelContainer = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        labelSongTitle = new javax.swing.JLabel();
+        labelArtistName = new javax.swing.JLabel();
+
+        setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        panelContainer.setOpaque(false);
+        panelContainer.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                panelContainerMouseClicked(evt);
+            }
+        });
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
         jLabel1.setPreferredSize(new java.awt.Dimension(100, 100));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Hieu Onichan");
+        labelSongTitle.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        labelSongTitle.setForeground(new java.awt.Color(255, 255, 255));
+        labelSongTitle.setText("Hieu Onichan");
 
-        jLabel3.setBackground(new java.awt.Color(204, 204, 204));
-        jLabel3.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel3.setText("Music abc");
+        labelArtistName.setBackground(new java.awt.Color(204, 204, 204));
+        labelArtistName.setForeground(new java.awt.Color(255, 255, 255));
+        labelArtistName.setText("Music abc");
+
+        javax.swing.GroupLayout panelContainerLayout = new javax.swing.GroupLayout(panelContainer);
+        panelContainer.setLayout(panelContainerLayout);
+        panelContainerLayout.setHorizontalGroup(
+            panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelContainerLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelSongTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panelContainerLayout.createSequentialGroup()
+                        .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 5, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        panelContainerLayout.setVerticalGroup(
+            panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelContainerLayout.createSequentialGroup()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, 0))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jLabel3))
+                .addComponent(panelContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void panelContainerMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelContainerMouseClicked
+    {//GEN-HEADEREND:event_panelContainerMouseClicked
+        musicPlayer.play(song);
+    }//GEN-LAST:event_panelContainerMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel labelArtistName;
+    private javax.swing.JLabel labelSongTitle;
+    private javax.swing.JPanel panelContainer;
     // End of variables declaration//GEN-END:variables
 }

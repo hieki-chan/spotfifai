@@ -1,20 +1,23 @@
 package spotfifai.ui;
 
-import java.awt.FlowLayout;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import spotfifai.controller.*;
 import spotfifai.controller.MusicPlayerController;
+import spotfifai.models.Playlist;
+import spotfifai.models.Song;
 import spotfifai.util.located.ResourceLocator;
 import spotfifai.util.located.ServiceLocator;
 import spotfifai.util.theme.Theme;
 
 public class MainFrame extends javax.swing.JFrame
 {
+
     TabViewSystem tabSystem;
-    
+
     PlaylistsController playlistController;
     MusicPlayerController musicPlayerController;
 
@@ -25,11 +28,16 @@ public class MainFrame extends javax.swing.JFrame
         setVisible(true);
         pack();
         setLocationRelativeTo(null); // Frame Center
-        
+
         tabSystem = new TabViewSystem(panelContentContainer);
 
         this.playlistController = ServiceLocator.get(PlaylistsController.class);
         this.musicPlayerController = ServiceLocator.get(MusicPlayerController.class);
+
+        musicPlayerController.setListener((s, d) ->
+        {
+            setSelectedSong(s, d);
+        });
 
         playProgress.addChangeListener(new ChangeListener()
         {
@@ -52,17 +60,48 @@ public class MainFrame extends javax.swing.JFrame
         //PlaylistsForm playlistForm = new PlaylistsForm();
         //playlistForm.setVisible(true);
         //showContent(playlistForm);
-        
         tabSystem.viewTab(PlaylistsForm.class);
 
-        panelLibContainer.setLayout(new FlowLayout());
+        initTabMenu();
+    }
 
-        panelLibContainer.add(new PlaylistItemForm());
-        panelLibContainer.add(new PlaylistItemForm());
-        panelLibContainer.add(new PlaylistItemForm());
+    private void initTabMenu()
+    {
+        panelLibContainer.setLayout(new BoxLayout(panelLibContainer, BoxLayout.Y_AXIS));
+
+        // home menu
+        var homeMenu = new MenuItemForm("Home", "Discover top songs", ResourceLocator.getIcon("home_icon.png"), () ->
+        {
+            tabSystem.viewTab(HomeForm.class);
+        });
+        addNewMenu(homeMenu);
+
+        // distribution menu
+        var distributionMenu = new MenuItemForm("Distribution", "Manage your songs", ResourceLocator.getIcon("menu_icon.png"), () ->
+        {
+            tabSystem.viewTab(DistributionForm.class);
+        });
+        addNewMenu(distributionMenu);
+
+        // playlists menu
+        for (var playlist : playlistController.getPlaylistDAO().getEntitiesAll())
+        {
+            var playlistMenu = new MenuItemForm(playlist.getTitle(), "3 songs", ResourceLocator.getIcon("playlist_icon.png"), () ->
+            {
+                tabSystem.viewTab(PlaylistsForm.class);
+            });
+
+            addNewMenu(playlistMenu);
+        }
 
         panelLibContainer.revalidate();
         panelLibContainer.repaint();
+    }
+
+    private void addNewMenu(MenuItemForm menuItem)
+    {
+        panelLibContainer.add(menuItem);
+        tabSystem.addMenuItem(menuItem);
     }
 
     private void showContent(JPanel panelForm)
@@ -70,17 +109,23 @@ public class MainFrame extends javax.swing.JFrame
         panelForm.setSize(panelContentContainer.getSize());
         panelForm.repaint();
         panelForm.setAlignmentX(0);
-        
+
         panelContentContainer.removeAll();
         panelContentContainer.add(panelForm);
         panelContentContainer.revalidate();
         panelContentContainer.repaint();
     }
 
-    private void setSelectedSong(String songName, String artistName)
+    private void setSelectedSong(Song song, float d)
     {
-        labelSongName.setText(songName);
-        labelArtistName.setText(artistName);
+        labelSongName.setText(song.getTitle());
+        labelArtistName.setText("hieu onichan");
+
+        int totalSeconds = Math.round(d);
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        String durationString = String.format("%02d:%02d", minutes, seconds);
+        labelAudioLength.setText(durationString);
     }
 
     @SuppressWarnings("unchecked")
@@ -94,10 +139,6 @@ public class MainFrame extends javax.swing.JFrame
         buttonNewPlaylist = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         panelLibContainer = new javax.swing.JPanel();
-        panelDistributionTab = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         musicIcon = new javax.swing.JLabel();
         labelSongName = new javax.swing.JLabel();
@@ -105,7 +146,7 @@ public class MainFrame extends javax.swing.JFrame
         jPanel6 = new javax.swing.JPanel();
         buttonPlay = new javax.swing.JLabel();
         playProgress = new javax.swing.JSlider();
-        jLabel4 = new javax.swing.JLabel();
+        labelAudioLength = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         toggleLoop = new javax.swing.JToggleButton();
         jButton2 = new javax.swing.JButton();
@@ -165,85 +206,15 @@ public class MainFrame extends javax.swing.JFrame
 
         panelLibContainer.setBackground(new java.awt.Color(35, 35, 35));
 
-        panelDistributionTab.setBackground(new java.awt.Color(35, 35, 35));
-        panelDistributionTab.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        panelDistributionTab.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
-                panelDistributionTabMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt)
-            {
-                panelDistributionTabMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt)
-            {
-                panelDistributionTabMouseExited(evt);
-            }
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
-                panelDistributionTabMousePressed(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
-                panelDistributionTabMouseReleased(evt);
-            }
-        });
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Distribution");
-
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Manage your songs");
-
-        jLabel7.setBackground(new java.awt.Color(45, 45, 45));
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/menu_icon.png"))); // NOI18N
-        jLabel7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jLabel7.setFocusable(false);
-        jLabel7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel7.setOpaque(true);
-        jLabel7.setPreferredSize(new java.awt.Dimension(40, 40));
-
-        javax.swing.GroupLayout panelDistributionTabLayout = new javax.swing.GroupLayout(panelDistributionTab);
-        panelDistributionTab.setLayout(panelDistributionTabLayout);
-        panelDistributionTabLayout.setHorizontalGroup(
-            panelDistributionTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDistributionTabLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                .addGroup(panelDistributionTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(27, 27, 27))
-        );
-        panelDistributionTabLayout.setVerticalGroup(
-            panelDistributionTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDistributionTabLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addGroup(panelDistributionTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelDistributionTabLayout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(jLabel3)))
-                .addGap(5, 5, 5))
-        );
-
         javax.swing.GroupLayout panelLibContainerLayout = new javax.swing.GroupLayout(panelLibContainer);
         panelLibContainer.setLayout(panelLibContainerLayout);
         panelLibContainerLayout.setHorizontalGroup(
             panelLibContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelDistributionTab, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 260, Short.MAX_VALUE)
         );
         panelLibContainerLayout.setVerticalGroup(
             panelLibContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelLibContainerLayout.createSequentialGroup()
-                .addComponent(panelDistributionTab, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(985, Short.MAX_VALUE))
+            .addGap(0, 1123, Short.MAX_VALUE)
         );
 
         jScrollPane1.setViewportView(panelLibContainer);
@@ -290,8 +261,8 @@ public class MainFrame extends javax.swing.JFrame
 
         playProgress.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("2:50");
+        labelAudioLength.setForeground(new java.awt.Color(255, 255, 255));
+        labelAudioLength.setText("2:50");
 
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("0:14");
@@ -330,7 +301,7 @@ public class MainFrame extends javax.swing.JFrame
                 .addGap(20, 20, 20)
                 .addComponent(playProgress, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                .addComponent(jLabel4)
+                .addComponent(labelAudioLength)
                 .addGap(25, 25, 25))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -355,7 +326,7 @@ public class MainFrame extends javax.swing.JFrame
                     .addComponent(buttonPlay))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
+                    .addComponent(labelAudioLength)
                     .addComponent(jLabel5)
                     .addComponent(playProgress, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -372,7 +343,7 @@ public class MainFrame extends javax.swing.JFrame
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labelSongName)
                     .addComponent(labelArtistName))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 219, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 210, Short.MAX_VALUE)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(219, Short.MAX_VALUE))
         );
@@ -442,9 +413,9 @@ public class MainFrame extends javax.swing.JFrame
             topbarContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(topbarContainerLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(topbarContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelBackToHome, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGroup(topbarContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(labelBackToHome, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -466,10 +437,7 @@ public class MainFrame extends javax.swing.JFrame
         panelRightLayout.setHorizontalGroup(
             panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(topbarContainer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelRightLayout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(panelContentContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+            .addComponent(panelContentContainer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelRightLayout.setVerticalGroup(
             panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -518,7 +486,7 @@ public class MainFrame extends javax.swing.JFrame
         if (playButtonState)
         {
             buttonPlay.setIcon(ResourceLocator.getIcon("pause_icon.png"));
-            musicPlayerController.play();
+            musicPlayerController.resume();
         } else
         {
             buttonPlay.setIcon(ResourceLocator.getIcon("play_icon.png"));
@@ -533,18 +501,18 @@ public class MainFrame extends javax.swing.JFrame
 
     private void buttonNewPlaylistMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_buttonNewPlaylistMouseClicked
     {//GEN-HEADEREND:event_buttonNewPlaylistMouseClicked
-        playlistController.onCreateNew();
+        Playlist createdPlaylist = playlistController.onCreateNew();
+        if (createdPlaylist != null)
+        {
+            addNewMenu(new MenuItemForm(createdPlaylist.getTitle(), "3 songs", ResourceLocator.getIcon("playlist_icon.png"), () ->
+            {
+                tabSystem.viewTab(PlaylistsForm.class);
+            }));
+
+            panelLibContainer.revalidate();
+            panelLibContainer.repaint();
+        }
     }//GEN-LAST:event_buttonNewPlaylistMouseClicked
-
-    private void panelDistributionTabMouseEntered(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelDistributionTabMouseEntered
-    {//GEN-HEADEREND:event_panelDistributionTabMouseEntered
-        panelDistributionTab.setBackground(Theme.GRAY_DARK_COLOR);
-    }//GEN-LAST:event_panelDistributionTabMouseEntered
-
-    private void panelDistributionTabMouseExited(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelDistributionTabMouseExited
-    {//GEN-HEADEREND:event_panelDistributionTabMouseExited
-        panelDistributionTab.setBackground(Theme.DARK_COLOR);
-    }//GEN-LAST:event_panelDistributionTabMouseExited
 
     private void labelBackToHomeMouseEntered(java.awt.event.MouseEvent evt)//GEN-FIRST:event_labelBackToHomeMouseEntered
     {//GEN-HEADEREND:event_labelBackToHomeMouseEntered
@@ -556,25 +524,10 @@ public class MainFrame extends javax.swing.JFrame
         labelBackToHome.setBackground(Theme.DARK_COLOR);
     }//GEN-LAST:event_labelBackToHomeMouseExited
 
-    private void panelDistributionTabMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelDistributionTabMousePressed
-    {//GEN-HEADEREND:event_panelDistributionTabMousePressed
-        panelDistributionTab.setBackground(Theme.DARKER_COLOR);
-    }//GEN-LAST:event_panelDistributionTabMousePressed
-
-    private void panelDistributionTabMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelDistributionTabMouseReleased
-    {//GEN-HEADEREND:event_panelDistributionTabMouseReleased
-        panelDistributionTab.setBackground(Theme.GRAY_DARK_COLOR);
-    }//GEN-LAST:event_panelDistributionTabMouseReleased
-
     private void labelBackToHomeMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_labelBackToHomeMouseClicked
     {//GEN-HEADEREND:event_labelBackToHomeMouseClicked
         tabSystem.viewTab(HomeForm.class);
     }//GEN-LAST:event_labelBackToHomeMouseClicked
-
-    private void panelDistributionTabMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelDistributionTabMouseClicked
-    {//GEN-HEADEREND:event_panelDistributionTabMouseClicked
-        tabSystem.viewTab(DistributionForm.class);
-    }//GEN-LAST:event_panelDistributionTabMouseClicked
 
     public static void main(String args[])
     {
@@ -628,21 +581,17 @@ public class MainFrame extends javax.swing.JFrame
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelArtistName;
+    private javax.swing.JLabel labelAudioLength;
     private javax.swing.JLabel labelBackToHome;
     private javax.swing.JLabel labelSongName;
     private javax.swing.JLabel musicIcon;
     private javax.swing.JPanel panelContentContainer;
-    private javax.swing.JPanel panelDistributionTab;
     private javax.swing.JPanel panelLeft;
     private javax.swing.JPanel panelLibContainer;
     private javax.swing.JPanel panelRight;
