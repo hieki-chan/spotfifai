@@ -5,6 +5,7 @@
 package spotfifai.ui;
 
 import javax.swing.Icon;
+import javax.swing.JPanel;
 import spotfifai.util.theme.Theme;
 
 /**
@@ -13,36 +14,55 @@ import spotfifai.util.theme.Theme;
  */
 public class MenuItemForm extends javax.swing.JPanel
 {
+    JPanel contentTab;
     Runnable onClick;
     Runnable onSelect;
     boolean isSelected;
+    boolean isMouseInside;
+
     /**
      * Creates new form PlaylistItemForm
      */
-    public MenuItemForm(String title, String subTitle, Icon icon, Runnable onClick)
+    public MenuItemForm(String title, String subTitle, Icon icon)
     {
         initComponents();
         setVisible(true);
-        
+
         labelTitle.setText(title);
         labelSubTitle.setText(subTitle);
         labelIcon.setIcon(icon);
-        
-        this.onClick = onClick;
     }
-    
+
+    public JPanel getContentTab()
+    {
+        return contentTab;
+    }
+
+    public void setContentTab(JPanel contentTab)
+    {
+        this.contentTab = contentTab;
+    }
+
     public void setOnSelected(Runnable onSelect)
     {
         this.onSelect = onSelect;
     }
-    
+
+    public void setOnUserClicked(Runnable onClick)
+    {
+        this.onClick = onClick;
+    }
+
     public void setSelection(boolean state)
     {
         isSelected = state;
-        if(!isSelected)
+        if (!isSelected)
+        {
             panelTabItem.setBackground(Theme.DARK_COLOR);
-        else 
+        } else
+        {
             panelTabItem.setBackground(Theme.GRAY_DARK_COLOR);
+        }
     }
 
     /**
@@ -111,11 +131,11 @@ public class MenuItemForm extends javax.swing.JPanel
             .addGroup(panelTabItemLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(labelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(10, 10, 10)
                 .addGroup(panelTabItemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(labelSubTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
                     .addComponent(labelTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(27, 27, 27))
+                .addGap(0, 0, 0))
         );
         panelTabItemLayout.setVerticalGroup(
             panelTabItemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -161,11 +181,13 @@ public class MenuItemForm extends javax.swing.JPanel
     private void panelTabItemMouseEntered(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelTabItemMouseEntered
     {//GEN-HEADEREND:event_panelTabItemMouseEntered
         panelTabItem.setBackground(Theme.GRAY_DARK_COLOR);
+        isMouseInside = true;
     }//GEN-LAST:event_panelTabItemMouseEntered
 
     private void panelTabItemMouseExited(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelTabItemMouseExited
     {//GEN-HEADEREND:event_panelTabItemMouseExited
-        panelTabItem.setBackground(isSelected? Theme.GRAY_DARK_COLOR : Theme.DARK_COLOR);
+        panelTabItem.setBackground(isSelected ? Theme.GRAY_DARK_COLOR : Theme.DARK_COLOR);
+        isMouseInside = false;
     }//GEN-LAST:event_panelTabItemMouseExited
 
     private void panelTabItemMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelTabItemMousePressed
@@ -175,7 +197,8 @@ public class MenuItemForm extends javax.swing.JPanel
 
     private void panelTabItemMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelTabItemMouseReleased
     {//GEN-HEADEREND:event_panelTabItemMouseReleased
-        panelTabItem.setBackground(Theme.GRAY_DARK_COLOR);
+        if(isMouseInside)
+            panelTabItem.setBackground(Theme.GRAY_DARK_COLOR);
     }//GEN-LAST:event_panelTabItemMouseReleased
 
 

@@ -4,6 +4,7 @@
  */
 package spotfifai.ui.songeditor;
 
+import spotfifai.ui.SongEditorForm;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Window;

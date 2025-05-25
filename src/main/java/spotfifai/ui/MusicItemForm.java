@@ -4,9 +4,14 @@
  */
 package spotfifai.ui;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.Timer;
 import spotfifai.controller.MusicPlayerController;
+import spotfifai.controller.PlaylistsController;
 import spotfifai.models.Song;
 import spotfifai.util.located.ServiceLocator;
+import spotfifai.util.theme.Theme;
 
 /**
  *
@@ -14,8 +19,11 @@ import spotfifai.util.located.ServiceLocator;
  */
 public class MusicItemForm extends javax.swing.JPanel
 {
+
     MusicPlayerController musicPlayer;
+    PlaylistsController playlistController;
     Song song;
+
     /**
      * Creates new form MusicItemForm
      */
@@ -24,13 +32,13 @@ public class MusicItemForm extends javax.swing.JPanel
         initComponents();
         this.setSize(100, 100);
         this.musicPlayer = ServiceLocator.get(MusicPlayerController.class);
+        this.playlistController = ServiceLocator.get(PlaylistsController.class);
         this.song = song;
-        
+
         labelSongTitle.setText(song.getTitle());
         labelArtistName.setText(song.getDescription());
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -45,15 +53,32 @@ public class MusicItemForm extends javax.swing.JPanel
         jLabel1 = new javax.swing.JLabel();
         labelSongTitle = new javax.swing.JLabel();
         labelArtistName = new javax.swing.JLabel();
+        buttonAddToPlaylist = new javax.swing.JButton();
 
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        panelContainer.setOpaque(false);
+        panelContainer.setBackground(new java.awt.Color(35, 35, 35));
         panelContainer.addMouseListener(new java.awt.event.MouseAdapter()
         {
             public void mouseClicked(java.awt.event.MouseEvent evt)
             {
                 panelContainerMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt)
+            {
+                panelContainerMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt)
+            {
+                panelContainerMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt)
+            {
+                panelContainerMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt)
+            {
+                panelContainerMouseReleased(evt);
             }
         });
 
@@ -68,6 +93,17 @@ public class MusicItemForm extends javax.swing.JPanel
         labelArtistName.setForeground(new java.awt.Color(255, 255, 255));
         labelArtistName.setText("Music abc");
 
+        buttonAddToPlaylist.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/add_icon.png"))); // NOI18N
+        buttonAddToPlaylist.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        buttonAddToPlaylist.setPreferredSize(new java.awt.Dimension(25, 25));
+        buttonAddToPlaylist.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonAddToPlaylistActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelContainerLayout = new javax.swing.GroupLayout(panelContainer);
         panelContainer.setLayout(panelContainerLayout);
         panelContainerLayout.setHorizontalGroup(
@@ -75,23 +111,28 @@ public class MusicItemForm extends javax.swing.JPanel
             .addGroup(panelContainerLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelSongTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panelContainerLayout.createSequentialGroup()
+                        .addComponent(labelSongTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(buttonAddToPlaylist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelContainerLayout.createSequentialGroup()
                         .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 5, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelContainerLayout.setVerticalGroup(
             panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelContainerLayout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonAddToPlaylist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
+                .addGap(15, 15, 15))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -105,19 +146,60 @@ public class MusicItemForm extends javax.swing.JPanel
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(panelContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(panelContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void panelContainerMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelContainerMouseClicked
     {//GEN-HEADEREND:event_panelContainerMouseClicked
-        musicPlayer.play(song);
+        Timer timer = new Timer(100, e ->
+        {
+            musicPlayer.play(song);
+        });
+        timer.setRepeats(false); 
+        timer.start();
     }//GEN-LAST:event_panelContainerMouseClicked
+
+    private void panelContainerMouseEntered(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelContainerMouseEntered
+    {//GEN-HEADEREND:event_panelContainerMouseEntered
+        panelContainer.setBackground(Theme.GRAY_DARK_COLOR);
+    }//GEN-LAST:event_panelContainerMouseEntered
+
+    private void panelContainerMouseExited(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelContainerMouseExited
+    {//GEN-HEADEREND:event_panelContainerMouseExited
+        panelContainer.setBackground(Theme.DARK_COLOR);
+    }//GEN-LAST:event_panelContainerMouseExited
+
+    private void buttonAddToPlaylistActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonAddToPlaylistActionPerformed
+    {//GEN-HEADEREND:event_buttonAddToPlaylistActionPerformed
+        JPopupMenu popup = new JPopupMenu();
+
+        for (var playlist : playlistController.getPlaylistDAO().getEntitiesAll())
+        {
+            JMenuItem item = new JMenuItem(playlist.getTitle());
+            item.addActionListener(e ->
+            {
+                System.out.println("add to play list");
+            });
+            popup.add(item);
+        }
+
+        popup.show(buttonAddToPlaylist, 0, 0);
+    }//GEN-LAST:event_buttonAddToPlaylistActionPerformed
+
+    private void panelContainerMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelContainerMousePressed
+    {//GEN-HEADEREND:event_panelContainerMousePressed
+        panelContainer.setBackground(Theme.LIGHT_DARK_COLOR);
+    }//GEN-LAST:event_panelContainerMousePressed
+
+    private void panelContainerMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelContainerMouseReleased
+    {//GEN-HEADEREND:event_panelContainerMouseReleased
+        panelContainer.setBackground(Theme.DARK_COLOR);
+    }//GEN-LAST:event_panelContainerMouseReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonAddToPlaylist;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel labelArtistName;
     private javax.swing.JLabel labelSongTitle;

@@ -46,4 +46,5 @@ public final class Theme
     public static final Color DARK_COLOR = new Color(35, 35, 35, 255);
     public static final Color DARKER_COLOR = new Color(30, 30, 30, 255);
     public static final Color GRAY_DARK_COLOR = new Color(45, 45, 45, 255);
+    public static final Color LIGHT_DARK_COLOR = new Color(60, 60, 60, 255);
 }

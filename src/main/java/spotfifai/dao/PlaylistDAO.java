@@ -50,6 +50,23 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
     @Override
     public boolean delete(Playlist entity)
     {
+        final String sql = "DELETE FROM Playlist WHERE playlistId = ?";
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setInt(1, entity.getPlaylistId());
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0)
+            {
+                removeFromCacheInternal(entity);
+                return true;
+            }
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(PlaylistDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
         return false;
     }
 

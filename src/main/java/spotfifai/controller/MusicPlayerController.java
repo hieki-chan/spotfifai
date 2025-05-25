@@ -28,6 +28,7 @@ public class MusicPlayerController implements IPlayerListener, IService
     Song currentSong;
     File tempFile;
     boolean loop;
+    boolean seeking;
 
     IMusicListenter musicListener;
 
@@ -36,15 +37,15 @@ public class MusicPlayerController implements IPlayerListener, IService
         this.audioPlayer = audioPlayer;
         // Add a basic listener
         audioPlayer.addPlayerListener(this);
-        try
-        {
-            // Open audio file
-            audioPlayer.open("S:\\Java\\spotfifai\\src\\main\\resources\\resources\\A Thousand Years.wav");
-            audioPlayer.play();
-        } catch (PlayerException ex)
-        {
-            Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try
+//        {
+//            // Open audio file
+//            audioPlayer.open("S:\\Java\\spotfifai\\src\\main\\resources\\resources\\A Thousand Years.wav");
+//            audioPlayer.play();
+//        } catch (PlayerException ex)
+//        {
+//            Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     public void setListener(IMusicListenter musicListener)
@@ -70,6 +71,7 @@ public class MusicPlayerController implements IPlayerListener, IService
         }
         try
         {
+            currentSong = song;
             byte[] audioBytes = song.getAudioData();
 
             tempFile = File.createTempFile("music", ".wav");
@@ -81,7 +83,6 @@ public class MusicPlayerController implements IPlayerListener, IService
 
             audioPlayer.open(tempFile);
             audioPlayer.play();
-            currentSong = song;
 
         } catch (IOException ex)
         {
@@ -122,7 +123,7 @@ public class MusicPlayerController implements IPlayerListener, IService
         //System.out.println(microsecondPosition);
         try
         {
-
+            seeking = true;
             audioPlayer.seek(microsecondPosition);
             //player.play();
         } catch (PlayerException ex)
@@ -148,7 +149,7 @@ public class MusicPlayerController implements IPlayerListener, IService
     {
         System.out.println("Opened: " + dataSource);
         System.out.println("Format properties: " + properties);
-        if (properties.size() == 0)
+        if (properties.isEmpty())
         {
             return;
         }
@@ -164,7 +165,20 @@ public class MusicPlayerController implements IPlayerListener, IService
     public void progress(int bytesRead, long microseconds, byte[] pcmData, Map<String, Object> properties)
     {
         // Uncomment to see progress (will spam console)
-        //System.out.println("Progress: " + bytesRead + " bytes, " + (microseconds / 1000) + " ms");
+        // System.out.println("Progress: " + bytesRead + " bytes, " + (microseconds / 1000) + " ms");
+        // System.out.println(properties);
+        if (properties.isEmpty())
+        {
+            return;
+        }
+
+        float progressRatio = bytesRead / (float) audioPlayer.getMaxMicrosecondPosition();
+        float progressInSeconds = progressRatio * (Float) properties.get("audio.duration.seconds");
+
+        if (musicListener != null && !seeking)
+        {
+            musicListener.onProgress(progressRatio, progressInSeconds);
+        }
     }
 
     @Override
@@ -210,12 +224,14 @@ public class MusicPlayerController implements IPlayerListener, IService
     @Override
     public void seeking()
     {
+        seeking = true;
         System.out.println("Seeking");
     }
 
     @Override
     public void seeked()
     {
+        seeking = false;
         System.out.println("Seek complete");
     }
 

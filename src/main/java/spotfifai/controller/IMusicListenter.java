@@ -10,8 +10,8 @@ import spotfifai.models.Song;
  *
  * @author admin
  */
-@FunctionalInterface
 public interface IMusicListenter
 {
     void onOpen(Song song, float duration);
+    void onProgress(float ratio, float progressInSeconds);
 }

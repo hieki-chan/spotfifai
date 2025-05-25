@@ -17,9 +17,7 @@ public class PlaylistsController implements IService
 {
     private final PlaylistDAO playlistDAO;
     private final PlaylistDetailDAO playlistDetailDAO;
-    
-    Playlist currentPlaylist;
-    
+        
     public PlaylistsController(
             PlaylistDAO playlistDAO,
             PlaylistDetailDAO playlistDetailDAO)
@@ -45,12 +43,12 @@ public class PlaylistsController implements IService
         return null;
     }
     
-    public boolean onDelete()
+    public boolean onDelete(Playlist playlist)
     {
-        if(currentPlaylist == null)
+        if(playlist == null)
             return false;
         
-        return playlistDAO.delete(currentPlaylist);
+        return playlistDAO.delete(playlist);
     }
     
     public void removeSongFromPlaylist()

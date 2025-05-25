@@ -25,14 +25,10 @@ class ButtonEditor extends DefaultCellEditor {
         button = new JButton();
         button.setOpaque(true);
 
-        // Xử lý sự kiện click
+       
         button.addActionListener(e -> {
-            fireEditingStopped(); // bắt buộc dừng editing
-            System.out.println("Đã nhấn Play ở dòng: " + row);
-
-            // Ví dụ: gọi controller để phát nhạc từ dòng `row`
-            // Song song = songTableModel.get(row);
-            // playSong(song);
+            fireEditingStopped(); 
+            System.out.println("clicked at row: " + row);
         });
     }
 

@@ -36,7 +36,7 @@ public class AudioPlayer implements Runnable
     private long threadSleep = -1;
 
     private List<IPlayerListener> listeners;
-    private Map<String, Object> emptyProperties = new HashMap<>();
+    Map<String, Object> properties;
 
     public AudioPlayer()
     {
@@ -165,7 +165,7 @@ public class AudioPlayer implements Runnable
             }
 
             createLine();
-            Map<String, Object> properties = new HashMap<>();
+            properties = new HashMap<>();
 
             if (audioFileFormat.getByteLength() > 0)
             {
@@ -529,7 +529,7 @@ public class AudioPlayer implements Runnable
 
                             for (IPlayerListener listener : listeners)
                             {
-                                listener.progress(encodedBytes, line.getMicrosecondPosition(), buffer, emptyProperties);
+                                listener.progress(encodedBytes, line.getMicrosecondPosition(), buffer, properties);
                             }
                         }
                     } catch (IOException e)
