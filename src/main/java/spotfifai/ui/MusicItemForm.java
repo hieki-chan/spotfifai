@@ -5,13 +5,14 @@
 package spotfifai.ui;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.Timer;
 import spotfifai.controller.MusicPlayerController;
 import spotfifai.controller.PlaylistsController;
 import spotfifai.models.Song;
+import spotfifai.states.ResultState;
 import spotfifai.util.located.ServiceLocator;
-import spotfifai.util.theme.Theme;
+import spotfifai.theme.Theme;
 
 /**
  *
@@ -152,12 +153,7 @@ public class MusicItemForm extends javax.swing.JPanel
 
     private void panelContainerMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelContainerMouseClicked
     {//GEN-HEADEREND:event_panelContainerMouseClicked
-        Timer timer = new Timer(100, e ->
-        {
-            musicPlayer.play(song);
-        });
-        timer.setRepeats(false); 
-        timer.start();
+        musicPlayer.playDelayed(song);
     }//GEN-LAST:event_panelContainerMouseClicked
 
     private void panelContainerMouseEntered(java.awt.event.MouseEvent evt)//GEN-FIRST:event_panelContainerMouseEntered
@@ -179,7 +175,14 @@ public class MusicItemForm extends javax.swing.JPanel
             JMenuItem item = new JMenuItem(playlist.getTitle());
             item.addActionListener(e ->
             {
-                System.out.println("add to play list");
+                ResultState state = playlistController.addSongToPlaylist(song, playlist);
+                if (state == ResultState.ERROR)
+                {
+                    JOptionPane.showMessageDialog(null, "An error occurs while adding song to playlist" + playlist.getTitle());
+                } else if (state == ResultState.FAILED)
+                {
+                    JOptionPane.showMessageDialog(null, "This is already in playlist: " + playlist.getTitle());
+                }
             });
             popup.add(item);
         }

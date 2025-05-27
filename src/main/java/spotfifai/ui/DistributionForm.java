@@ -145,7 +145,9 @@ public class DistributionForm extends javax.swing.JPanel
         tableSongs.setColumnSelectionAllowed(true);
         tableSongs.setInheritsPopupMenu(true);
         tableSongs.setMinimumSize(new java.awt.Dimension(225, 25));
-        tableSongs.setRowHeight(30);
+        tableSongs.setRowHeight(50);
+        tableSongs.setShowGrid(false);
+        tableSongs.setShowHorizontalLines(true);
         tableSongs.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tableSongs);
         tableSongs.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);

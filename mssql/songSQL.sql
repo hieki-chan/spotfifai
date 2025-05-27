@@ -43,3 +43,4 @@ DROP TABLE Song
 DROP TABLE [User]
 
 SELECT * FROM SONG
+SELECT * FROM PlaylistDetail

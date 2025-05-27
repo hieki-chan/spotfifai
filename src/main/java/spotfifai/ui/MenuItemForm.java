@@ -6,7 +6,7 @@ package spotfifai.ui;
 
 import javax.swing.Icon;
 import javax.swing.JPanel;
-import spotfifai.util.theme.Theme;
+import spotfifai.theme.Theme;
 
 /**
  *

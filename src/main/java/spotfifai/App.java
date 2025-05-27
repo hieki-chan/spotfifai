@@ -3,6 +3,8 @@
  */
 package spotfifai;
 
+import spotfifai.theme.FlatTheme;
+import spotfifai.theme.Theme;
 import spotfifai.controller.*;
 import spotfifai.dao.*;
 import spotfifai.dbengine.DBConnector;
@@ -10,7 +12,6 @@ import spotfifai.controller.MusicPlayerController;
 import spotfifai.ui.MainFrame;
 import spotfifai.util.audioplayer.AudioPlayer;
 import spotfifai.util.located.ServiceLocator;
-import spotfifai.util.theme.*;
 
 /**
  *

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Timer;
 import spotfifai.ui.MainFrame;
 import spotfifai.models.Song;
 import spotfifai.util.audioplayer.AudioPlayer;
@@ -41,7 +42,7 @@ public class MusicPlayerController implements IPlayerListener, IService
 //        {
 //            // Open audio file
 //            audioPlayer.open("S:\\Java\\spotfifai\\src\\main\\resources\\resources\\A Thousand Years.wav");
-//            audioPlayer.play();
+//            audioPlayer.playDelayed();
 //        } catch (PlayerException ex)
 //        {
 //            Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
@@ -58,7 +59,17 @@ public class MusicPlayerController implements IPlayerListener, IService
         return audioPlayer.getMaxMicrosecondPosition();
     }
 
-    public void play(Song song)
+    public void playDelayed(Song song)
+    {
+        Timer timer = new Timer(100, e ->
+        {
+            playImmediately(song);
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void playImmediately(Song song)
     {
         if (song == currentSong)
         {
@@ -97,8 +108,14 @@ public class MusicPlayerController implements IPlayerListener, IService
     {
         try
         {
-            audioPlayer.resume();
-            //audioPlayer.play();
+            if (audioPlayer.getStatus() == AudioPlayer.PAUSED)
+            {
+                audioPlayer.resume();
+            } else if (audioPlayer.getStatus() == AudioPlayer.STOPPED)
+            {
+                audioPlayer.seek(0);
+                audioPlayer.play();
+            }
         } catch (PlayerException ex)
         {
             Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
@@ -125,7 +142,7 @@ public class MusicPlayerController implements IPlayerListener, IService
         {
             seeking = true;
             audioPlayer.seek(microsecondPosition);
-            //player.play();
+            //player.playDelayed();
         } catch (PlayerException ex)
         {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);

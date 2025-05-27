@@ -274,7 +274,7 @@
                       <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                       <Component id="labelProgress" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                      <Component id="playProgress" min="-2" pref="398" max="-2" attributes="0"/>
+                      <Component id="sliderPlayProgress" min="-2" pref="398" max="-2" attributes="0"/>
                       <EmptySpace pref="20" max="32767" attributes="0"/>
                       <Component id="labelAudioLength" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="25" pref="25" max="-2" attributes="0"/>
@@ -308,7 +308,7 @@
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="labelAudioLength" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="labelProgress" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="playProgress" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="sliderPlayProgress" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
@@ -329,7 +329,7 @@
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="buttonPlayMouseClicked"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JSlider" name="playProgress">
+            <Component class="javax.swing.JSlider" name="sliderPlayProgress">
               <Properties>
                 <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                   <Color id="Hand Cursor"/>

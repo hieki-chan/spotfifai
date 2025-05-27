@@ -4,34 +4,35 @@
  */
 package spotfifai.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author admin
  */
-public class Playlist
+public class Playlist implements Comparable<Playlist>
 {
 
     private int playlistId;
     private String title;
-    private List<Integer> songIds;
+    private List<PlaylistDetail> playlistDetails;
 
-    public Playlist(int playlistId, String name, List<Integer> songIds)
+    public Playlist(int playlistId, String title, List<PlaylistDetail> songIds)
     {
         this.playlistId = playlistId;
-        this.title = name;
-        this.songIds = songIds;
+        this.title = title;
+        this.playlistDetails = songIds;
     }
 
-    public Playlist(String name)
+    public Playlist(int playlistId, String title)
     {
-        this.title = name;
+        this(playlistId, title, new ArrayList<>());
     }
-
-    public Playlist()
+    
+    public Playlist(String title)
     {
-
+        this(-1, title, new ArrayList<>());
     }
 
     public int getPlaylistId()
@@ -49,4 +50,54 @@ public class Playlist
         return title;
     }
 
+    public List<PlaylistDetail> getPlaylistDetails()
+    {
+        return playlistDetails;
+    }
+
+    public void setPlaylistDetails(List<PlaylistDetail> songIds)
+    {
+        this.playlistDetails = songIds;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Playlist{" + "playlistId=" + playlistId + ", title=" + title + ", playlistDetails=" + playlistDetails + '}';
+    }
+
+    @Override
+    public int hashCode()
+    { 
+        return this.playlistId;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        final Playlist other = (Playlist) obj;
+        return this.playlistId == other.playlistId;
+    }
+
+    @Override
+    public int compareTo(Playlist o)
+    {
+        return this.getTitle().compareTo(o.getTitle());
+//        int comp = Integer.compare(this.getPlaylistId(), (o.getPlaylistId()));
+//        if (comp != 0) {
+//            return comp;
+//        }
+    }
 }

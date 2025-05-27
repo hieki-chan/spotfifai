@@ -5,8 +5,11 @@
 package spotfifai.ui;
 
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import spotfifai.controller.PlaylistsController;
+import spotfifai.controller.SongDistributorController;
 import spotfifai.models.Playlist;
+import spotfifai.models.Song;
 import spotfifai.util.located.ServiceLocator;
 
 /**
@@ -16,6 +19,7 @@ import spotfifai.util.located.ServiceLocator;
 public class PlaylistForm extends javax.swing.JPanel
 {
     PlaylistsController playlistController;
+    SongDistributorController songController;
     MenuItemForm activeMenuItem;
     Playlist currentPlaylist;
     /**
@@ -26,6 +30,7 @@ public class PlaylistForm extends javax.swing.JPanel
         initComponents();
         
         playlistController = ServiceLocator.get(PlaylistsController.class);
+        songController = ServiceLocator.get(SongDistributorController.class);
     }
     
     public void setPlaylist(Playlist playlist, MenuItemForm selectedMenuItem)
@@ -34,6 +39,22 @@ public class PlaylistForm extends javax.swing.JPanel
         activeMenuItem = selectedMenuItem;
         
         labelTitle.setText(playlist.getTitle());
+        
+        loadPlaylistSongs();
+    }
+    
+    private void loadPlaylistSongs()
+    {
+        var tableModel = (DefaultTableModel)tableSongs.getModel();
+        tableModel.setRowCount(0);
+        
+        for(var playlistDetail : currentPlaylist.getPlaylistDetails())
+        {
+            Song song = songController.getSongDAO().getEntity(playlistDetail.getSongId());
+            tableModel.addRow(new Object[] {"", song.getTitle(), "", ""});
+        }
+        
+        tableSongs.setModel(tableModel);
     }
 
     /**
@@ -50,10 +71,9 @@ public class PlaylistForm extends javax.swing.JPanel
         buttonDelete = new javax.swing.JButton();
         labelTitle = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableSongs = new javax.swing.JTable();
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
-        jLabel1.setText("jLabel1");
 
         buttonDelete.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         buttonDelete.setText("Remove");
@@ -68,7 +88,7 @@ public class PlaylistForm extends javax.swing.JPanel
         labelTitle.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         labelTitle.setText("Playlist#1");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableSongs.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][]
             {
                 {null, null, null, null},
@@ -92,7 +112,10 @@ public class PlaylistForm extends javax.swing.JPanel
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        tableSongs.setRowHeight(50);
+        tableSongs.setShowGrid(true);
+        tableSongs.setShowVerticalLines(false);
+        jScrollPane1.setViewportView(tableSongs);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -127,7 +150,7 @@ public class PlaylistForm extends javax.swing.JPanel
         if(option != JOptionPane.OK_OPTION)
             return;
         
-        if(playlistController.onDelete(currentPlaylist))
+        if(playlistController.onPlaylistDelete(currentPlaylist))
         {
             activeMenuItem.setEnabled(false);
             System.out.println("playlist removed");
@@ -139,7 +162,7 @@ public class PlaylistForm extends javax.swing.JPanel
     private javax.swing.JButton buttonDelete;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel labelTitle;
+    private javax.swing.JTable tableSongs;
     // End of variables declaration//GEN-END:variables
 }

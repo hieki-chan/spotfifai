@@ -7,10 +7,10 @@ package spotfifai.dao;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import spotfifai.dbengine.DBConnector;
 import spotfifai.util.located.ServiceLocator;
 
@@ -26,7 +26,7 @@ public abstract class BaseDAO<T>
 
     protected BaseDAO()
     {
-        cachedEntities = new HashMap<>();
+        cachedEntities = new TreeMap<>();
         listeners = new ArrayList<>();
         initialize();
     }
@@ -38,7 +38,7 @@ public abstract class BaseDAO<T>
     abstract boolean delete(T entity);
 
     abstract boolean add(T entity);
-
+    
     private void initialize()
     {
         onQuerySelector();

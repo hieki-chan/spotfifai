@@ -12,7 +12,7 @@ import spotfifai.models.Song;
 import spotfifai.util.TimeUtil;
 import spotfifai.util.located.ResourceLocator;
 import spotfifai.util.located.ServiceLocator;
-import spotfifai.util.theme.Theme;
+import spotfifai.theme.Theme;
 
 public class MainFrame extends javax.swing.JFrame
 {
@@ -33,8 +33,9 @@ public class MainFrame extends javax.swing.JFrame
         this.playlistController = ServiceLocator.get(PlaylistsController.class);
         this.musicPlayerController = ServiceLocator.get(MusicPlayerController.class);
 
-        // play progress
-        playProgress.getModel().setMaximum(1000);
+        // playDelayed progress
+        sliderPlayProgress.getModel().setMaximum(1000);
+        sliderPlayProgress.getModel().setMinimum(0);
         musicPlayerController.setListener(new IMusicListenter()
         {
             @Override
@@ -47,25 +48,31 @@ public class MainFrame extends javax.swing.JFrame
             public void onProgress(float ratio, float progressInSeconds)
             {
                 //System.out.println(ratio);
-                playProgress.getModel().setValue((int) (ratio * playProgress.getModel().getMaximum()));
+                int progress = (int) (ratio * sliderPlayProgress.getModel().getMaximum());
+                sliderPlayProgress.getModel().setValue(progress);
+                System.out.println(progress);
+                if (progress == sliderPlayProgress.getModel().getMaximum() - 1)
+                {
+                    buttonPlay.setIcon(ResourceLocator.getIcon("play_icon.png"));
+                }
                 labelProgress.setText(TimeUtil.getTimeInString(progressInSeconds));
             }
         });
 
-        playProgress.addChangeListener(new ChangeListener()
+        sliderPlayProgress.addChangeListener(new ChangeListener()
         {
             private boolean wasPressed = false;
 
             @Override
             public void stateChanged(ChangeEvent e)
             {
-                if (playProgress.getModel().getValueIsAdjusting())
+                if (sliderPlayProgress.getModel().getValueIsAdjusting())
                 {
                     wasPressed = true;
                 } else if (wasPressed)
                 {
                     wasPressed = false;
-                    musicPlayerController.seek(playProgress.getValue() / (float) playProgress.getModel().getMaximum());
+                    musicPlayerController.seek(sliderPlayProgress.getValue() / (float) sliderPlayProgress.getModel().getMaximum());
                     //playProgress.getModel().setValue(playProgress.getValue());
                 }
             }
@@ -105,7 +112,7 @@ public class MainFrame extends javax.swing.JFrame
         {
             createNewPlayListMenu(playlist);
         }
-        
+
         tabSystem.setSelect(homeMenu);
     }
 
@@ -155,7 +162,7 @@ public class MainFrame extends javax.swing.JFrame
         labelArtistName = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         buttonPlay = new javax.swing.JLabel();
-        playProgress = new javax.swing.JSlider();
+        sliderPlayProgress = new javax.swing.JSlider();
         labelAudioLength = new javax.swing.JLabel();
         labelProgress = new javax.swing.JLabel();
         toggleLoop = new javax.swing.JToggleButton();
@@ -273,7 +280,7 @@ public class MainFrame extends javax.swing.JFrame
             }
         });
 
-        playProgress.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        sliderPlayProgress.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         labelAudioLength.setForeground(new java.awt.Color(255, 255, 255));
         labelAudioLength.setText("2:50");
@@ -313,7 +320,7 @@ public class MainFrame extends javax.swing.JFrame
                 .addGap(27, 27, 27)
                 .addComponent(labelProgress)
                 .addGap(20, 20, 20)
-                .addComponent(playProgress, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sliderPlayProgress, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addComponent(labelAudioLength)
                 .addGap(25, 25, 25))
@@ -342,7 +349,7 @@ public class MainFrame extends javax.swing.JFrame
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelAudioLength)
                     .addComponent(labelProgress)
-                    .addComponent(playProgress, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sliderPlayProgress, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -611,7 +618,7 @@ public class MainFrame extends javax.swing.JFrame
     private javax.swing.JPanel panelLeft;
     private javax.swing.JPanel panelLibContainer;
     private javax.swing.JPanel panelRight;
-    private javax.swing.JSlider playProgress;
+    private javax.swing.JSlider sliderPlayProgress;
     private javax.swing.JToggleButton toggleLoop;
     private javax.swing.JPanel topbarContainer;
     // End of variables declaration//GEN-END:variables

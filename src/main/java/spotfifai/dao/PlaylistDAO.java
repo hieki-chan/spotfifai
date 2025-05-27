@@ -34,8 +34,7 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
         {
             Playlist playlist = new Playlist(
                     rs.getInt(1),
-                    rs.getString(2),
-                    null
+                    rs.getString(2)
             );
             addToCacheInternal(playlist);
         });
@@ -82,22 +81,28 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             stmt.setString(1, entity.getTitle());
-            stmt.executeUpdate();
+            int affected = stmt.executeUpdate();
+            if (affected <= 0)
+            {
+                return false;
+            }
 
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next())
             {
                 int id = rs.getInt(1);
                 entity.setPlaylistId(id);
-            }
+                addToCacheInternal(entity);
 
-            addToCacheInternal(entity);
-            return true;
+                return true;
+            }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(PlaylistDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+        
+        return false;
     }
 }
