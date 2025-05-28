@@ -6,16 +6,18 @@ package spotfifai.ui;
 
 import javax.swing.JCheckBox;
 import javax.swing.table.DefaultTableModel;
+import spotfifai.controller.IAuthListener;
 import spotfifai.controller.SongDistributorController;
+import spotfifai.controller.SpotfifaiAuth;
 import spotfifai.models.Song;
-import spotfifai.ui.songeditor.SongEditorDialog;
+import spotfifai.util.SpotfifaiDialog;
 import spotfifai.util.located.ServiceLocator;
 
 /**
  *
  * @author admin
  */
-public class DistributionForm extends javax.swing.JPanel
+public class DistributionForm extends javax.swing.JPanel implements IAuthListener
 {
 
     SongDistributorController songDistributor;
@@ -27,7 +29,9 @@ public class DistributionForm extends javax.swing.JPanel
     public DistributionForm()
     {
         initComponents();
-
+        
+        SpotfifaiAuth.current().addListener(this);
+        
         songDistributor = ServiceLocator.get(SongDistributorController.class);
         songDistributor.getSongDAO().addListener(() ->
         {
@@ -63,7 +67,7 @@ public class DistributionForm extends javax.swing.JPanel
 
         int i = 0;
         int selectedIndex = 0;
-        for (Song song : songDistributor.getSongDAO().getEntitiesAll())
+        for (Song song : songDistributor.getOwnedSongs())
         {
             tableModel.addRow(new Object[]
             {
@@ -79,10 +83,10 @@ public class DistributionForm extends javax.swing.JPanel
         }
 
         tableSongs.setModel(tableModel);
-        
+
         tableSongs.getColumn("Play").setCellRenderer(new ButtonRenderer());
         tableSongs.getColumn("Play").setCellEditor(new ButtonEditor(new JCheckBox(), tableSongs));
-    
+
         if (tableModel.getRowCount() > 0)
         {
             tableSongs.setRowSelectionInterval(selectedIndex, selectedIndex);
@@ -93,6 +97,18 @@ public class DistributionForm extends javax.swing.JPanel
     {
         labelSongTitle.setText("<html>" + songTitle + "</html>");
         labelSongDescription.setText("<html>" + songDescription + "</html>");
+    }
+
+    @Override
+    public void onSignedIn()
+    {
+        loadSongs();
+    }
+
+    @Override
+    public void onSignedOut()
+    {
+        
     }
 
     /**
@@ -118,6 +134,8 @@ public class DistributionForm extends javax.swing.JPanel
 
         setOpaque(false);
 
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
         tableSongs.setAutoCreateRowSorter(true);
         tableSongs.setBackground(new java.awt.Color(45, 45, 45));
         tableSongs.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -142,8 +160,6 @@ public class DistributionForm extends javax.swing.JPanel
                 return canEdit [columnIndex];
             }
         });
-        tableSongs.setColumnSelectionAllowed(true);
-        tableSongs.setInheritsPopupMenu(true);
         tableSongs.setMinimumSize(new java.awt.Dimension(225, 25));
         tableSongs.setRowHeight(50);
         tableSongs.setShowGrid(false);
@@ -279,14 +295,12 @@ public class DistributionForm extends javax.swing.JPanel
     private void buttonPublishNewSongActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonPublishNewSongActionPerformed
     {//GEN-HEADEREND:event_buttonPublishNewSongActionPerformed
         // TODO add your handling code here:
-        var publisher = new SongEditorDialog("Song Editor", this, null);
-        publisher.show();
+        SpotfifaiDialog.show("Song Editor", this, new SongEditorForm(null));
     }//GEN-LAST:event_buttonPublishNewSongActionPerformed
 
     private void buttonEditSelectedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonEditSelectedActionPerformed
     {//GEN-HEADEREND:event_buttonEditSelectedActionPerformed
-        var editor = new SongEditorDialog("Song Publisher", this, selectedSong);
-        editor.show();
+        SpotfifaiDialog.show("Song Publisher", this, new SongEditorForm(selectedSong));
     }//GEN-LAST:event_buttonEditSelectedActionPerformed
 
 

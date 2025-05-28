@@ -25,19 +25,27 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
         super();
     }
 
-    @Override
-    void onQuerySelector()
+    public void queryOwnedPlaylist(String userId)
     {
-        final String sql = "SELECT * FROM Playlist";
+        final String sql = "SELECT * FROM Playlist WHERE userId = ?";
 
-        JDBQuery.selectAllFrom(super.getConnection(), sql, (rs) ->
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql);)
         {
-            Playlist playlist = new Playlist(
-                    rs.getInt(1),
-                    rs.getString(2)
-            );
-            addToCacheInternal(playlist);
-        });
+            stmt.setString(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next())
+            {
+                Playlist playlist = new Playlist(
+                        rs.getInt("playlistId"),
+                        rs.getString("title"),
+                        rs.getString("userId")
+                );
+                addToCacheInternal(playlist);
+            }
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(JDBQuery.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -77,10 +85,11 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
             return false;
         }
 
-        final String sql = "INSERT INTO Playlist (title) VALUES (?)";
+        final String sql = "INSERT INTO Playlist (title, userId) VALUES (?, ?)";
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
             stmt.setString(1, entity.getTitle());
+            stmt.setString(2, entity.getUserId());
             int affected = stmt.executeUpdate();
             if (affected <= 0)
             {
@@ -102,7 +111,7 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
             Logger.getLogger(PlaylistDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-        
+
         return false;
     }
 }

@@ -73,7 +73,9 @@ public class PlaylistForm extends javax.swing.JPanel
         jScrollPane1 = new javax.swing.JScrollPane();
         tableSongs = new javax.swing.JTable();
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         buttonDelete.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         buttonDelete.setText("Remove");
@@ -87,6 +89,8 @@ public class PlaylistForm extends javax.swing.JPanel
 
         labelTitle.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         labelTitle.setText("Playlist#1");
+
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
         tableSongs.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][]

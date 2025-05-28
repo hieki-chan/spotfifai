@@ -59,9 +59,14 @@ public class Song
         return description;
     }
 
-    public int getArtistId()
+    public String getArtistId()
     {
-        return artistId.hashCode();
+        return artistId;
+    }
+    
+    public void setArtistId(String artistId)
+    {
+        this.artistId = artistId;
     }
 
     public byte[] getAudioData()

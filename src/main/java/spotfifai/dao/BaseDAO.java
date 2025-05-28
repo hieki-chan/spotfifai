@@ -31,7 +31,7 @@ public abstract class BaseDAO<T>
         initialize();
     }
 
-    abstract void onQuerySelector();
+    //abstract void onQuerySelector();
 
     abstract boolean update(T entity);
 
@@ -41,7 +41,7 @@ public abstract class BaseDAO<T>
     
     private void initialize()
     {
-        onQuerySelector();
+        //onQuerySelector();
     }
     
     public void addListener(IDAOListener listener)

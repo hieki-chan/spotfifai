@@ -58,6 +58,11 @@ public class MusicPlayerController implements IPlayerListener, IService
     {
         return audioPlayer.getMaxMicrosecondPosition();
     }
+    
+    public boolean isPlaying()
+    {
+        return audioPlayer.getStatus() == AudioPlayer.PLAYING;
+    }
 
     public void playDelayed(Song song)
     {

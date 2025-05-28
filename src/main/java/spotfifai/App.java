@@ -19,6 +19,7 @@ import spotfifai.util.located.ServiceLocator;
  */
 public class App
 {
+
     public final static String APP_NAME = "Spotfifai";
 
     public static void main(String[] args)
@@ -28,18 +29,19 @@ public class App
 
         // dark theme
         Theme.SetTheme(FlatTheme.DARK);
-        
+
         //main ui
         var mainFrame = new MainFrame();
         mainFrame.setTitle(APP_NAME);
     }
-    
+
     static void installServices()
     {
+
         // Music player
         AudioPlayer audioPlayer = new AudioPlayer();
         ServiceLocator.register(new MusicPlayerController(audioPlayer));
-        
+
         // JDBC
         ServiceLocator.register(new DBConnector());
 
@@ -49,6 +51,9 @@ public class App
         var playlistDAO = new PlaylistDAO();
         var playlisyDetailDAO = new PlaylistDetailDAO();
         
+        //singleton
+        SpotfifaiAuth spotfifaiAuthenticator = new SpotfifaiAuth(userDAO);
+
         ServiceLocator.register(new SongDistributorController(songDAO, userDAO));
         ServiceLocator.register(new PlaylistsController(playlistDAO, playlisyDetailDAO));
         ServiceLocator.register(new HomeController(songDAO));

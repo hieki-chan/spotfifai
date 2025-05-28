@@ -43,4 +43,10 @@ DROP TABLE Song
 DROP TABLE [User]
 
 SELECT * FROM SONG
+
+SELECT * FROM Playlist
 SELECT * FROM PlaylistDetail
+
+SELECT * FROM [User]
+
+INSERT INTO [User] VALUES ('admin-123', 'admin', '123')

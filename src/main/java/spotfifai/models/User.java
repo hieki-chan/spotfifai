@@ -10,9 +10,28 @@ package spotfifai.models;
  */
 public class User
 {
-    private int userId;
+    private String userId;
     private String username;
+    private String password;
 
+    public User(String userId, String username, String password)
+    {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUserId()
+    {
+        return userId;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+    
+    
     public String getUsername()
     {
         return username;

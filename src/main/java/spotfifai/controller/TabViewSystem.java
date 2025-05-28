@@ -57,13 +57,20 @@ public final class TabViewSystem
         showContent(tabToShow);
         return (T) tabToShow;
     }
+    
+    public <T extends JPanel> T viewTab(T tabToShow)
+    {
+        showContent(tabToShow);
+        return (T)tabToShow;
+    }
 
     public void addMenuItem(MenuItemForm menuItem)
     {
         menuItemList.add(menuItem);
         tabContainer.add(menuItem);
-        tabContainer.setPreferredSize(new Dimension(260, menuItemList.size() * 50));
+        
         tabContainer.setSize(new Dimension(260, menuItemList.size() * 50));
+        tabContainer.setPreferredSize(new Dimension(260, menuItemList.size() * 50));
 
         menuItem.setOnSelected(() ->
         {
@@ -85,8 +92,8 @@ public final class TabViewSystem
             showContent(item.getContentTab());
         }
 
-        tabContainer.setPreferredSize(new Dimension(260, menuItemList.size() * 50));
-        tabContainer.setSize(new Dimension(260, menuItemList.size() * 50));
+        //tabContainer.setPreferredSize(new Dimension(260, menuItemList.size() * 50));
+        //tabContainer.setSize(new Dimension(260, menuItemList.size() * 50));
         tabContainer.revalidate();
         tabContainer.repaint();
     }

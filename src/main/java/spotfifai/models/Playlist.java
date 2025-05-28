@@ -17,22 +17,24 @@ public class Playlist implements Comparable<Playlist>
     private int playlistId;
     private String title;
     private List<PlaylistDetail> playlistDetails;
+    private String userId;
 
-    public Playlist(int playlistId, String title, List<PlaylistDetail> songIds)
+    public Playlist(int playlistId, String title, List<PlaylistDetail> songIds, String userId)
     {
         this.playlistId = playlistId;
         this.title = title;
         this.playlistDetails = songIds;
+        this.userId = userId;
     }
 
-    public Playlist(int playlistId, String title)
+    public Playlist(int playlistId, String title, String userId)
     {
-        this(playlistId, title, new ArrayList<>());
+        this(playlistId, title, new ArrayList<>(), userId);
     }
     
-    public Playlist(String title)
+    public Playlist(String title, String userId)
     {
-        this(-1, title, new ArrayList<>());
+        this(-1, title, new ArrayList<>(), userId);
     }
 
     public int getPlaylistId()
@@ -58,6 +60,11 @@ public class Playlist implements Comparable<Playlist>
     public void setPlaylistDetails(List<PlaylistDetail> songIds)
     {
         this.playlistDetails = songIds;
+    }
+
+    public String getUserId()
+    {
+        return userId;
     }
 
     @Override

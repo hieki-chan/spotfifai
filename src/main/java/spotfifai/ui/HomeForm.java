@@ -60,6 +60,7 @@ public class HomeForm extends javax.swing.JPanel
 
         setAlignmentX(0.0F);
         setAlignmentY(0.0F);
+        setOpaque(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

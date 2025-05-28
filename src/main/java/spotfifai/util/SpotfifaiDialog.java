@@ -2,34 +2,44 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package spotfifai.ui.songeditor;
+package spotfifai.util;
 
-import spotfifai.ui.SongEditorForm;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Window;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import spotfifai.models.Song;
 
 /**
  *
  * @author admin
  */
-public class SongEditorDialog
+public class SpotfifaiDialog
 {
-    protected SongEditorForm editorForm;
+    protected JPanel panel;
     final JDialog dialog;
     final Window owner;
-
-    public SongEditorDialog(String title, JPanel currentPanel, Song song)
+    
+    public SpotfifaiDialog(String title, Window owner, JPanel panelForm)
     {
-        owner = SwingUtilities.getWindowAncestor(currentPanel);
+        this.owner = owner;
         dialog = new JDialog(owner, title, Dialog.ModalityType.APPLICATION_MODAL);
 
-        editorForm = new SongEditorForm(song);
-        dialog.add(editorForm);
+        panel = panelForm;
+        dialog.add(panel);
+    }
+    
+    public static SpotfifaiDialog show(String title, JPanel currentPanel, JPanel panelForm)
+    {
+        return show(title, SwingUtilities.getWindowAncestor(currentPanel), panelForm);
+    }
+    
+    public static SpotfifaiDialog show(String title, Window owner, JPanel panelForm)
+    {
+        SpotfifaiDialog d = new SpotfifaiDialog(title, owner, panelForm);
+        d.show();
+        return d;
     }
 
     public void show()

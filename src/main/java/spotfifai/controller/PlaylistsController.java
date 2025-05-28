@@ -4,6 +4,7 @@
  */
 package spotfifai.controller;
 
+import java.util.Map;
 import spotfifai.dao.PlaylistDAO;
 import spotfifai.dao.PlaylistDetailDAO;
 import spotfifai.states.ResultState;
@@ -16,11 +17,13 @@ import spotfifai.util.located.IService;
  *
  * @author admin
  */
-public class PlaylistsController implements IService
+public class PlaylistsController implements IService, IAuthListener
 {
 
     private final PlaylistDAO playlistDAO;
     private final PlaylistDetailDAO playlistDetailDAO;
+    
+    private final Map<Integer, T> cachedEntities;
 
     public PlaylistsController(
             PlaylistDAO playlistDAO,
@@ -36,16 +39,23 @@ public class PlaylistsController implements IService
             Playlist playlist = playlistDAO.getEntity(playlistDetail.getPlaylistId());
             playlist.getPlaylistDetails().add(playlistDetail);
         };
+        
+        SpotfifaiAuth.current().addListener(this);
     }
 
     public PlaylistDAO getPlaylistDAO()
     {
         return playlistDAO;
     }
+    
+    public void getOwnedPlaylists()
+    {
+        
+    }
 
     public Playlist onCreateNew()
     {
-        Playlist newPlaylist = new Playlist(getNewPlaylistName());
+        Playlist newPlaylist = new Playlist(getNewPlaylistName(), SpotfifaiAuth.current().getCurrentUser().getUserId());
 
         if (playlistDAO.add(newPlaylist))
         {
@@ -62,7 +72,7 @@ public class PlaylistsController implements IService
             return false;
         }
 
-        return playlistDetailDAO.delete(playlist.getPlaylistId()) && playlistDAO.delete(playlist);
+        return playlistDetailDAO.delete(playlist.getPlaylistId()) >= 0 && playlistDAO.delete(playlist);
     }
 
     public ResultState addSongToPlaylist(Song song, Playlist playlist)
@@ -91,5 +101,17 @@ public class PlaylistsController implements IService
     private String getNewPlaylistName()
     {
         return "Playlist #" + (playlistDAO.getCount() + 1);
+    }
+
+    @Override
+    public void onSignedIn()
+    {
+        playlistDAO.queryOwnedPlaylist(SpotfifaiAuth.current().getCurrentUser().getUserId());
+    }
+
+    @Override
+    public void onSignedOut()
+    {
+        playlistDAO.
     }
 }

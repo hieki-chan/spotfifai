@@ -7,7 +7,6 @@ package spotfifai.dao;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +20,6 @@ import spotfifai.models.PlaylistDetail;
 public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
 {
 
-    @Override
     void onQuerySelector()
     {
         final String sql = "SELECT * FROM PlaylistDetail";
@@ -42,35 +40,6 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
         return false;
     }
 
-    public boolean deleteRange(List<PlaylistDetail> entities)
-    {
-        String sql = "DELETE FROM PlaylistDetail WHERE playlistId IN ("
-                + String.join(",", Collections.nCopies(entities.size(), "?")) + ")";
-
-        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
-        {
-            for (int i = 0; i < entities.size(); i++)
-            {
-                stmt.setInt(1, entities.get(i).getPlaylistId());
-            }
-
-            int affected = stmt.executeUpdate();
-            if (affected > 0)
-            {
-                for (int i = 0; i < entities.size(); i++)
-                {
-                    removeFromCacheInternal(entities.get(i));
-                }
-                return true;
-            }
-
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(PlaylistDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return false;
-    }
     @Override
     boolean delete(PlaylistDetail entity)
     {
@@ -78,7 +47,7 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
         return false;
     }
 
-    public boolean delete(int playlistId)
+    public int delete(int playlistId)
     {
         String sql = "DELETE FROM PlaylistDetail WHERE playlistId = ?";
 
@@ -88,28 +57,32 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
 
             int affected = stmt.executeUpdate();
             if (affected > 0)
-            {       
+            {
                 List<PlaylistDetail> entitiesToRemoved = new ArrayList<>();
                 for (var entity : getEntitiesAll())
                 {
-                    if(entity.getPlaylistId() == playlistId)
+                    if (entity.getPlaylistId() == playlistId)
+                    {
                         entitiesToRemoved.add(entity);
+                    }
                 }
-                
+
                 for (var entity : entitiesToRemoved)
                 {
-                    if(entity.getPlaylistId() == playlistId)
+                    if (entity.getPlaylistId() == playlistId)
+                    {
                         removeFromCacheInternal(entity);
+                    }
                 }
-                return true;
             }
+            return affected;
 
         } catch (SQLException ex)
         {
             Logger.getLogger(PlaylistDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        return false;
+
+        return -1;
     }
 
     @Override
