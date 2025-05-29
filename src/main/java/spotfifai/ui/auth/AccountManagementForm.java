@@ -6,6 +6,9 @@ package spotfifai.ui.auth;
 
 import javax.swing.SwingUtilities;
 import spotfifai.controller.SpotfifaiAuth;
+import spotfifai.controller.UserController;
+import spotfifai.models.User;
+import spotfifai.util.located.ServiceLocator;
 
 /**
  *
@@ -14,12 +17,27 @@ import spotfifai.controller.SpotfifaiAuth;
 public class AccountManagementForm extends javax.swing.JPanel
 {
 
+    UserController userController;
+    boolean isEditing;
+
     /**
      * Creates new form AccountManagementForm
      */
     public AccountManagementForm()
     {
         initComponents();
+        userController = ServiceLocator.get(UserController.class);
+        showUserInfo(SpotfifaiAuth.current().getCurrentUser());
+    }
+
+    private void showUserInfo(User u)
+    {
+        labelUID.setText("UID: " + u.getUserId());
+        txtFieldUserName.setText(u.getUsername());
+        txtFieldUserName.setEditable(isEditing);
+        passwordField.setText(u.getPassword());
+        passwordField.setEditable(isEditing);
+        buttonEdition.setText("Edit");
     }
 
     /**
@@ -32,43 +50,145 @@ public class AccountManagementForm extends javax.swing.JPanel
     private void initComponents()
     {
 
-        jButton1 = new javax.swing.JButton();
+        buttonEdition = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        txtFieldUserName = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        passwordField = new javax.swing.JPasswordField();
+        jLabel4 = new javax.swing.JLabel();
+        buttonSignout = new javax.swing.JButton();
+        labelUID = new javax.swing.JLabel();
 
-        jButton1.setText("SIGN OUT");
-        jButton1.addActionListener(new java.awt.event.ActionListener()
+        buttonEdition.setText("Edit");
+        buttonEdition.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                jButton1ActionPerformed(evt);
+                buttonEditionActionPerformed(evt);
             }
         });
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/fifai.png"))); // NOI18N
+        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jLabel1.setPreferredSize(new java.awt.Dimension(80, 80));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setLabelFor(passwordField);
+        jLabel3.setText("Password");
+
+        passwordField.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                passwordFieldActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel4.setLabelFor(txtFieldUserName);
+        jLabel4.setText("Username");
+
+        buttonSignout.setText("SIGN OUT");
+        buttonSignout.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonSignoutActionPerformed(evt);
+            }
+        });
+
+        labelUID.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        labelUID.setText("UID:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 51, Short.MAX_VALUE)
+                .addComponent(buttonSignout, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(73, 73, 73))
             .addGroup(layout.createSequentialGroup()
-                .addGap(67, 67, 67)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(80, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel4)
+                            .addComponent(labelUID)
+                            .addComponent(jLabel3)
+                            .addComponent(txtFieldUserName, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
+                            .addComponent(passwordField)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(139, 139, 139)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(96, 96, 96)
+                        .addComponent(buttonEdition, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(236, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14))
+                .addContainerGap()
+                .addComponent(labelUID)
+                .addGap(7, 7, 7)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFieldUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(buttonEdition, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(buttonSignout, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton1ActionPerformed
-    {//GEN-HEADEREND:event_jButton1ActionPerformed
+    private void buttonEditionActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonEditionActionPerformed
+    {//GEN-HEADEREND:event_buttonEditionActionPerformed
+        if (isEditing)
+        {
+            User u = SpotfifaiAuth.current().getCurrentUser();
+            u.setUsername(txtFieldUserName.getText());
+            u.setPassword(new String(passwordField.getPassword()));
+            userController.updateUser(u);
+            showUserInfo(u);
+        } else
+        {
+            buttonEdition.setText("Save");
+        }
+
+        isEditing = !isEditing;
+        txtFieldUserName.setEditable(isEditing);
+        passwordField.setEditable(isEditing);
+    }//GEN-LAST:event_buttonEditionActionPerformed
+
+    private void buttonSignoutActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonSignoutActionPerformed
+    {//GEN-HEADEREND:event_buttonSignoutActionPerformed
         SpotfifaiAuth.current().signOut();
-         SwingUtilities.getWindowAncestor(this).dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+        SwingUtilities.getWindowAncestor(this).dispose();
+    }//GEN-LAST:event_buttonSignoutActionPerformed
+
+    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_passwordFieldActionPerformed
+    {//GEN-HEADEREND:event_passwordFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_passwordFieldActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton buttonEdition;
+    private javax.swing.JButton buttonSignout;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel labelUID;
+    private javax.swing.JPasswordField passwordField;
+    private javax.swing.JTextField txtFieldUserName;
     // End of variables declaration//GEN-END:variables
 }

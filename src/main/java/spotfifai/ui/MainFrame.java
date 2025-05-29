@@ -83,9 +83,6 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
             }
         });
 
-        //PlaylistsForm playlistForm = new PlaylistForm();
-        //playlistForm.setVisible(true);
-        //showContent(playlistForm);
         initTabMenu();
     }
 
@@ -117,7 +114,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         }
 
         // playlists menu
-        for (var playlist : playlistController.getPlaylistDAO().getEntitiesAll())
+        for (var playlist : playlistController.getOwnedPlaylists())
         {
             createNewPlayListMenu(playlist);
         }
@@ -250,7 +247,6 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         jScrollPane1.setPreferredSize(new java.awt.Dimension(10, 50));
 
         panelTabContainer.setBackground(new java.awt.Color(35, 35, 35));
-        panelTabContainer.setPreferredSize(new java.awt.Dimension(10, 400));
 
         javax.swing.GroupLayout panelTabContainerLayout = new javax.swing.GroupLayout(panelTabContainer);
         panelTabContainer.setLayout(panelTabContainerLayout);

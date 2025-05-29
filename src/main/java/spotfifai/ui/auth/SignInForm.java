@@ -52,9 +52,11 @@ public class SignInForm extends javax.swing.JPanel
         });
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setLabelFor(txtFieldUserName);
         jLabel2.setText("Username");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setLabelFor(passwordField);
         jLabel3.setText("Password");
 
         labelPasswordErr.setForeground(new java.awt.Color(255, 0, 51));

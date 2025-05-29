@@ -21,7 +21,7 @@ import spotfifai.util.located.ServiceLocator;
  */
 public abstract class BaseDAO<T>
 {
-    private final Map<Integer, T> cachedEntities;
+    protected final Map<Integer, T> cachedEntities;
     List<IDAOListener> listeners;
 
     protected BaseDAO()

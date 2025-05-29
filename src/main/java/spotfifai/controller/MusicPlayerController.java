@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
+import spotfifai.dao.SongDAO;
 import spotfifai.ui.MainFrame;
 import spotfifai.models.Song;
 import spotfifai.util.audioplayer.AudioPlayer;
@@ -25,6 +26,7 @@ import spotfifai.util.audioplayer.IPlayerListener;
 public class MusicPlayerController implements IPlayerListener, IService
 {
 
+    SongDAO songDAO;
     AudioPlayer audioPlayer;
     Song currentSong;
     File tempFile;
@@ -33,9 +35,10 @@ public class MusicPlayerController implements IPlayerListener, IService
 
     IMusicListenter musicListener;
 
-    public MusicPlayerController(AudioPlayer audioPlayer)
+    public MusicPlayerController(AudioPlayer audioPlayer, SongDAO songDAO)
     {
         this.audioPlayer = audioPlayer;
+        this.songDAO = songDAO;
         // Add a basic listener
         audioPlayer.addPlayerListener(this);
 //        try
@@ -88,6 +91,12 @@ public class MusicPlayerController implements IPlayerListener, IService
         try
         {
             currentSong = song;
+            
+            if(currentSong.getAudioData() == null)
+                currentSong.setAudioData(songDAO.getAudioData(song.getSongId()));
+            else
+                return;
+            
             byte[] audioBytes = song.getAudioData();
 
             tempFile = File.createTempFile("music", ".wav");

@@ -7,7 +7,9 @@ package spotfifai.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,9 +28,10 @@ public final class SongDAO extends BaseDAO<Song>
         super();
     }
 
-    void onQuerySelector()
+    public Map<String, Song> queryAllSongs()
     {
-        final String sql = "SELECT * FROM Song";
+        Map<String, Song> result = new HashMap<>();
+        final String sql = "SELECT songId, title, description, userId FROM Song";
 
         JDBQuery.selectAllFrom(super.getConnection(), sql, (rs) ->
         {
@@ -36,13 +39,16 @@ public final class SongDAO extends BaseDAO<Song>
                     rs.getString("songId"),
                     rs.getString("title"),
                     rs.getString("description"),
-                    rs.getBytes("audioData")
+                    null,
+                    rs.getString("userId")
             );
-            addToCacheInternal(song);
+            result.put(song.getSongId(), song);
         });
+
+        return result;
     }
 
-    public Map<Integer, Song> queryOwnedSongs(String userId)
+    public Map<String, Song> queryOwnedSongs(String userId)
     {
         final String sql = "SELECT * FROM Song WHERE userId = ?";
 
@@ -51,16 +57,17 @@ public final class SongDAO extends BaseDAO<Song>
             stmt.setString(1, userId);
             ResultSet rs = stmt.executeQuery();
 
-            Map<Integer, Song> ownedSongs = new HashMap<>();
+            Map<String, Song> ownedSongs = new HashMap<>();
             while (rs.next())
             {
                 Song song = new Song(
                         rs.getString("songId"),
                         rs.getString("title"),
                         rs.getString("description"),
-                        rs.getBytes("audioData")
+                        rs.getBytes("audioData"),
+                        userId
                 );
-                ownedSongs.put(song.hashCode(), song);
+                ownedSongs.put(song.getSongId(), song);
             }
             return ownedSongs;
 
@@ -71,6 +78,65 @@ public final class SongDAO extends BaseDAO<Song>
         return null;
     }
 
+    public Map<String, Song> getSongs(List<String> songIds)
+    {
+        if(songIds.size() == 0)
+            return null;
+        
+        String sql = "SELECT songId, title, description, userId FROM Song WHERE songId IN (" + String.join(",", Collections.nCopies(songIds.size(), "?")) + ")";
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            for (int i = 0; i < songIds.size(); i++)
+            {
+                stmt.setString(i + 1, songIds.get(i));
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            Map<String, Song> result = new HashMap<>();
+
+            while (rs.next())
+            {
+                Song song = new Song(
+                        rs.getString("songId"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        null,
+                        rs.getString("userId")
+                );
+                result.put(song.getSongId(), song);
+            }
+
+            return result;
+        } 
+        catch (SQLException ex)
+        {
+            Logger.getLogger(SongDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    public byte[] getAudioData(String songId)
+    {
+        final String sql = "SELECT audioData FROM Song WHERE songId = ?";
+
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setString(1, songId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next())
+            {
+                return rs.getBytes("audioData");
+            }
+
+        } catch (SQLException ex)
+        {
+
+        }
+        return null;
+    }
+    
     @Override
     public boolean update(Song entity)
     {
@@ -88,7 +154,7 @@ public final class SongDAO extends BaseDAO<Song>
             if (affected > 0)
             {
                 // updated
-                addToCacheInternal(entity);
+                //addToCacheInternal(entity);
                 return true;
             }
 

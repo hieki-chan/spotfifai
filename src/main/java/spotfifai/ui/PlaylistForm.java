@@ -9,7 +9,6 @@ import javax.swing.table.DefaultTableModel;
 import spotfifai.controller.PlaylistsController;
 import spotfifai.controller.SongDistributorController;
 import spotfifai.models.Playlist;
-import spotfifai.models.Song;
 import spotfifai.util.located.ServiceLocator;
 
 /**
@@ -18,42 +17,50 @@ import spotfifai.util.located.ServiceLocator;
  */
 public class PlaylistForm extends javax.swing.JPanel
 {
+
     PlaylistsController playlistController;
     SongDistributorController songController;
     MenuItemForm activeMenuItem;
     Playlist currentPlaylist;
+
     /**
      * Creates new form PlaylistForm
      */
     public PlaylistForm()
     {
         initComponents();
-        
+
         playlistController = ServiceLocator.get(PlaylistsController.class);
         songController = ServiceLocator.get(SongDistributorController.class);
     }
-    
+
     public void setPlaylist(Playlist playlist, MenuItemForm selectedMenuItem)
     {
         currentPlaylist = playlist;
         activeMenuItem = selectedMenuItem;
-        
+
         labelTitle.setText(playlist.getTitle());
-        
+
         loadPlaylistSongs();
     }
-    
+
     private void loadPlaylistSongs()
     {
-        var tableModel = (DefaultTableModel)tableSongs.getModel();
+        var tableModel = (DefaultTableModel) tableSongs.getModel();
         tableModel.setRowCount(0);
-        
-        for(var playlistDetail : currentPlaylist.getPlaylistDetails())
+
+        var songsInPlaylist = songController.getSongs(currentPlaylist.getPlaylistDetails());
+        if (songsInPlaylist != null)
         {
-            Song song = songController.getSongDAO().getEntity(playlistDetail.getSongId());
-            tableModel.addRow(new Object[] {"", song.getTitle(), "", ""});
+            for (var song : songsInPlaylist.values())
+            {
+                tableModel.addRow(new Object[]
+                {
+                    song.getTitle(), song.getDescription(), song.getArtistId(), " "
+                });
+            }
         }
-        
+
         tableSongs.setModel(tableModel);
     }
 
@@ -72,6 +79,7 @@ public class PlaylistForm extends javax.swing.JPanel
         labelTitle = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableSongs = new javax.swing.JTable();
+        buttonPlayAll = new javax.swing.JButton();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
@@ -102,7 +110,7 @@ public class PlaylistForm extends javax.swing.JPanel
             },
             new String []
             {
-                "Title 1", "Title", "Artist", "Play"
+                "Title", "Description", "Artist", "Play"
             }
         )
         {
@@ -121,6 +129,16 @@ public class PlaylistForm extends javax.swing.JPanel
         tableSongs.setShowVerticalLines(false);
         jScrollPane1.setViewportView(tableSongs);
 
+        buttonPlayAll.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        buttonPlayAll.setText("Play All");
+        buttonPlayAll.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonPlayAllActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -130,6 +148,8 @@ public class PlaylistForm extends javax.swing.JPanel
                 .addContainerGap()
                 .addComponent(labelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonPlayAll, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(buttonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addComponent(jScrollPane1)
@@ -140,7 +160,9 @@ public class PlaylistForm extends javax.swing.JPanel
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(buttonDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(buttonDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                        .addComponent(buttonPlayAll, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE))
                     .addComponent(labelTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -149,21 +171,29 @@ public class PlaylistForm extends javax.swing.JPanel
 
     private void buttonDeleteActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonDeleteActionPerformed
     {//GEN-HEADEREND:event_buttonDeleteActionPerformed
-        
-        int option = JOptionPane.showConfirmDialog(this, "Delete " + currentPlaylist.getTitle() + " from your library?", "Delete playlist", JOptionPane.OK_CANCEL_OPTION);
-        if(option != JOptionPane.OK_OPTION)
+
+        int option = JOptionPane.showConfirmDialog(null, "Delete " + currentPlaylist.getTitle() + " from your library?", "Delete playlist", JOptionPane.OK_CANCEL_OPTION);
+        if (option != JOptionPane.OK_OPTION)
+        {
             return;
-        
-        if(playlistController.onPlaylistDelete(currentPlaylist))
+        }
+
+        if (playlistController.onPlaylistDelete(currentPlaylist))
         {
             activeMenuItem.setEnabled(false);
             System.out.println("playlist removed");
         }
     }//GEN-LAST:event_buttonDeleteActionPerformed
 
+    private void buttonPlayAllActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonPlayAllActionPerformed
+    {//GEN-HEADEREND:event_buttonPlayAllActionPerformed
+        
+    }//GEN-LAST:event_buttonPlayAllActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonDelete;
+    private javax.swing.JButton buttonPlayAll;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelTitle;

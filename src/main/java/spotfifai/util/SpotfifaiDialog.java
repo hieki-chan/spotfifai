@@ -45,6 +45,7 @@ public class SpotfifaiDialog
     public void show()
     {
         dialog.setSize(getDialogSize());
+        dialog.setResizable(false);
         dialog.setLocationRelativeTo(owner);
         dialog.setVisible(true);
     }

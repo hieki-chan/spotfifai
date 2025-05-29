@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import spotfifai.dbengine.JDBQuery;
 import spotfifai.models.PlaylistDetail;
 
 /**
@@ -19,21 +18,6 @@ import spotfifai.models.PlaylistDetail;
  */
 public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
 {
-
-    void onQuerySelector()
-    {
-        final String sql = "SELECT * FROM PlaylistDetail";
-
-        JDBQuery.selectAllFrom(super.getConnection(), sql, (rs) ->
-        {
-            PlaylistDetail playlistDetail = new PlaylistDetail(
-                    rs.getInt(1),
-                    rs.getString(2)
-            );
-            addToCacheInternal(playlistDetail);
-        });
-    }
-
     @Override
     public boolean update(PlaylistDetail entity)
     {

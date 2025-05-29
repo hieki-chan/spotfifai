@@ -33,15 +33,13 @@ public class App
         //main ui
         var mainFrame = new MainFrame();
         mainFrame.setTitle(APP_NAME);
+
+        SpotfifaiAuth.current().signIn("admin", "123");
+
     }
 
     static void installServices()
     {
-
-        // Music player
-        AudioPlayer audioPlayer = new AudioPlayer();
-        ServiceLocator.register(new MusicPlayerController(audioPlayer));
-
         // JDBC
         ServiceLocator.register(new DBConnector());
 
@@ -50,10 +48,17 @@ public class App
         var userDAO = new UserDAO();
         var playlistDAO = new PlaylistDAO();
         var playlisyDetailDAO = new PlaylistDetailDAO();
+
+        
+        // Music player
+        AudioPlayer audioPlayer = new AudioPlayer();
+        ServiceLocator.register(new MusicPlayerController(audioPlayer, songDAO));
         
         //singleton
         SpotfifaiAuth spotfifaiAuthenticator = new SpotfifaiAuth(userDAO);
 
+        ServiceLocator.register(new UserController(userDAO));
+        ServiceLocator.register(new SongDistributorController(songDAO, userDAO));
         ServiceLocator.register(new SongDistributorController(songDAO, userDAO));
         ServiceLocator.register(new PlaylistsController(playlistDAO, playlisyDetailDAO));
         ServiceLocator.register(new HomeController(songDAO));

@@ -26,8 +26,8 @@ public class HomeController implements IService
     
     public List<Song> loadTopSongs()
     {
-        var songCollection = songDAO.getEntitiesAll();
-        var songList =  new ArrayList<>(songCollection);
+        var songCollection = songDAO.queryAllSongs();
+        var songList =  new ArrayList<>(songCollection.values());
         
         Random rand = new Random();
         while(songList.size() > 10)

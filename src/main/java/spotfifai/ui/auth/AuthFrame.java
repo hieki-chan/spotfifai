@@ -38,6 +38,7 @@ public class AuthFrame extends javax.swing.JFrame
         signInForm = new SignInForm();
         signUpForm = new SignUpForm();
         showContent(signInForm);
+        labelHeader.setText("SIGN IN TO SPOTFIFAI");
         setIconImage(((ImageIcon)ResourceLocator.getIcon("fifai.png")).getImage());
     }
     
@@ -66,12 +67,12 @@ public class AuthFrame extends javax.swing.JFrame
 
         jPanel1 = new javax.swing.JPanel();
         panelContainer = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        labelHeader = new javax.swing.JLabel();
         buttonTabSignIn = new javax.swing.JButton();
         buttonTabSignUp = new javax.swing.JButton();
         background = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -86,9 +87,10 @@ public class AuthFrame extends javax.swing.JFrame
             .addGap(0, 373, Short.MAX_VALUE)
         );
 
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/fifai.png"))); // NOI18N
-        jLabel5.setText("SPOTFIFAI");
+        labelHeader.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        labelHeader.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelHeader.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/fifai.png"))); // NOI18N
+        labelHeader.setText("SIGN IN TO SPOTFIFAI");
 
         buttonTabSignIn.setText("SIGN IN");
         buttonTabSignIn.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -114,23 +116,22 @@ public class AuthFrame extends javax.swing.JFrame
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(buttonTabSignIn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(buttonTabSignUp, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(78, 78, 78))
             .addComponent(panelContainer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(130, 130, 130)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(74, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(labelHeader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(buttonTabSignIn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(buttonTabSignUp, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(78, 78, 78))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonTabSignUp, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -151,12 +152,14 @@ public class AuthFrame extends javax.swing.JFrame
     {//GEN-HEADEREND:event_buttonTabSignInActionPerformed
         //sign in on click
         showContent(signInForm);
+        labelHeader.setText("SIGN IN TO SPOTFIFAI");
     }//GEN-LAST:event_buttonTabSignInActionPerformed
 
     private void buttonTabSignUpActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonTabSignUpActionPerformed
     {//GEN-HEADEREND:event_buttonTabSignUpActionPerformed
         //sign up on click
         showContent(signUpForm);
+        labelHeader.setText("SIGN UP TO SPOTFIFAI");
     }//GEN-LAST:event_buttonTabSignUpActionPerformed
 
     /**
@@ -209,8 +212,8 @@ public class AuthFrame extends javax.swing.JFrame
     private javax.swing.JLabel background;
     private javax.swing.JButton buttonTabSignIn;
     private javax.swing.JButton buttonTabSignUp;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel labelHeader;
     private javax.swing.JPanel panelContainer;
     // End of variables declaration//GEN-END:variables
 }

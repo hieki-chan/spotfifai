@@ -4,8 +4,6 @@
  */
 package spotfifai.controller;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +29,6 @@ public final class TabViewSystem
     public TabViewSystem(JPanel tabContainer, JPanel contentContainer)
     {
         this.tabContainer = tabContainer;
-        tabContainer.setAlignmentY(Component.TOP_ALIGNMENT);
         this.contentContainer = contentContainer;
 
         menuItemList = new ArrayList<>();
@@ -57,11 +54,11 @@ public final class TabViewSystem
         showContent(tabToShow);
         return (T) tabToShow;
     }
-    
+
     public <T extends JPanel> T viewTab(T tabToShow)
     {
         showContent(tabToShow);
-        return (T)tabToShow;
+        return (T) tabToShow;
     }
 
     public void addMenuItem(MenuItemForm menuItem)
@@ -69,9 +66,6 @@ public final class TabViewSystem
         menuItemList.add(menuItem);
         tabContainer.add(menuItem);
         
-        tabContainer.setSize(new Dimension(260, menuItemList.size() * 50));
-        tabContainer.setPreferredSize(new Dimension(260, menuItemList.size() * 50));
-
         menuItem.setOnSelected(() ->
         {
             setSelect(menuItem);
@@ -92,8 +86,6 @@ public final class TabViewSystem
             showContent(item.getContentTab());
         }
 
-        //tabContainer.setPreferredSize(new Dimension(260, menuItemList.size() * 50));
-        //tabContainer.setSize(new Dimension(260, menuItemList.size() * 50));
         tabContainer.revalidate();
         tabContainer.repaint();
     }
@@ -112,7 +104,6 @@ public final class TabViewSystem
     private void showContent(JPanel tabToShow)
     {
         tabToShow.setSize(contentContainer.getSize());
-        tabToShow.setAlignmentX(0);
 
         contentContainer.removeAll();
         contentContainer.add(tabToShow);

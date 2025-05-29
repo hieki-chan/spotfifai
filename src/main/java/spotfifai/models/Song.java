@@ -20,28 +20,29 @@ public class Song
     private String artistId;
     private byte[] audioData;
 
-    public Song(String songId, String title, String description, byte[] audioData)
+    public Song(String songId, String title, String description, byte[] audioData, String artistId)
     {
         this.songId = songId;
         this.title = title;
         this.description = description;
         this.audioData = audioData;
+        this.artistId = artistId;
     }
 
-    public Song(String title, String description, byte[] audioData)
+    public Song(String title, String description, byte[] audioData, String artistId)
     {
         String uid = UUID.randomUUID().toString().substring(0, 20);
-        this(uid, title, description, audioData);
+        this(uid, title, description, audioData, artistId);
     }
 
     public Song()
     {
-        this("New song...", "description...", null);
+        this("New song...", "description...", null, "");
     }
 
     public Song(Song other)
     {
-        this(other.songId, other.title, other.description, other.audioData);
+        this(other.songId, other.title, other.description, other.audioData, other.artistId);
     }
 
     public String getSongId()

@@ -4,6 +4,7 @@
  */
 package spotfifai.ui;
 
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 import spotfifai.theme.Theme;
@@ -27,6 +28,7 @@ public class MenuItemForm extends javax.swing.JPanel
     {
         initComponents();
         setVisible(true);
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         labelTitle.setText(title);
         labelSubTitle.setText(subTitle);

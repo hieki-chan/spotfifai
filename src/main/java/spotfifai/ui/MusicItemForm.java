@@ -37,7 +37,8 @@ public class MusicItemForm extends javax.swing.JPanel
         this.song = song;
 
         labelSongTitle.setText(song.getTitle());
-        labelArtistName.setText(song.getDescription());
+        labelArtistName.setText(song.getArtistId());
+        labelDescription.setText(song.getDescription());
     }
 
     /**
@@ -55,8 +56,10 @@ public class MusicItemForm extends javax.swing.JPanel
         labelSongTitle = new javax.swing.JLabel();
         labelArtistName = new javax.swing.JLabel();
         buttonAddToPlaylist = new javax.swing.JButton();
+        labelDescription = new javax.swing.JLabel();
 
         setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        setOpaque(false);
 
         panelContainer.setBackground(new java.awt.Color(35, 35, 35));
         panelContainer.addMouseListener(new java.awt.event.MouseAdapter()
@@ -86,11 +89,12 @@ public class MusicItemForm extends javax.swing.JPanel
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
         jLabel1.setPreferredSize(new java.awt.Dimension(100, 100));
 
-        labelSongTitle.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        labelSongTitle.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         labelSongTitle.setForeground(new java.awt.Color(255, 255, 255));
         labelSongTitle.setText("Hieu Onichan");
 
         labelArtistName.setBackground(new java.awt.Color(204, 204, 204));
+        labelArtistName.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         labelArtistName.setForeground(new java.awt.Color(255, 255, 255));
         labelArtistName.setText("Music abc");
 
@@ -105,6 +109,10 @@ public class MusicItemForm extends javax.swing.JPanel
             }
         });
 
+        labelDescription.setForeground(new java.awt.Color(255, 255, 255));
+        labelDescription.setText("description here...");
+        labelDescription.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+
         javax.swing.GroupLayout panelContainerLayout = new javax.swing.GroupLayout(panelContainer);
         panelContainer.setLayout(panelContainerLayout);
         panelContainerLayout.setHorizontalGroup(
@@ -118,8 +126,9 @@ public class MusicItemForm extends javax.swing.JPanel
                         .addComponent(buttonAddToPlaylist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelContainerLayout.createSequentialGroup()
                         .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(labelDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -129,11 +138,14 @@ public class MusicItemForm extends javax.swing.JPanel
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buttonAddToPlaylist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15))
+                    .addComponent(buttonAddToPlaylist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelContainerLayout.createSequentialGroup()
+                        .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(labelDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -170,7 +182,7 @@ public class MusicItemForm extends javax.swing.JPanel
     {//GEN-HEADEREND:event_buttonAddToPlaylistActionPerformed
         JPopupMenu popup = new JPopupMenu();
 
-        for (var playlist : playlistController.getPlaylistDAO().getEntitiesAll())
+        for (var playlist : playlistController.getOwnedPlaylists())
         {
             JMenuItem item = new JMenuItem(playlist.getTitle());
             item.addActionListener(e ->
@@ -205,6 +217,7 @@ public class MusicItemForm extends javax.swing.JPanel
     private javax.swing.JButton buttonAddToPlaylist;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel labelArtistName;
+    private javax.swing.JLabel labelDescription;
     private javax.swing.JLabel labelSongTitle;
     private javax.swing.JPanel panelContainer;
     // End of variables declaration//GEN-END:variables

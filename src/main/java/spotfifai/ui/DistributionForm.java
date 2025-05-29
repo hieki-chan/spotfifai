@@ -53,7 +53,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
                 if (selectedRow != -1)
                 {
                     String songId = (String) tableSongs.getValueAt(selectedRow, 0);
-                    selectedSong = songDistributor.getSongDAO().getEntity(songId);
+                    selectedSong = songDistributor.getOwnedSongs().get(songId);
                     showSongInfo(selectedSong.getTitle(), selectedSong.getDescription());
                 }
             }
@@ -67,7 +67,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
 
         int i = 0;
         int selectedIndex = 0;
-        for (Song song : songDistributor.getOwnedSongs())
+        for (Song song : songDistributor.getOwnedSongs().values())
         {
             tableModel.addRow(new Object[]
             {

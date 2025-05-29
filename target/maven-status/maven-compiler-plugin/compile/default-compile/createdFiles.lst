@@ -26,6 +26,8 @@ spotfifai\ui\ButtonRenderer.class
 spotfifai\ui\SongEditorForm$1.class
 spotfifai\controller\SpotfifaiAuth.class
 com\tien\swing\SearchText$1.class
+spotfifai\ui\PlaylistForm$3.class
+spotfifai\ui\auth\AccountManagementForm$2.class
 spotfifai\ui\MainFrame$4.class
 spotfifai\ui\MusicItemForm.class
 spotfifai\controller\IAuthListener.class
@@ -37,6 +39,7 @@ spotfifai\ui\SongEditorForm$2.class
 spotfifai\controller\TabViewSystem.class
 spotfifai\theme\Theme$1.class
 com\tien\swing\RoundPanel.class
+spotfifai\ui\auth\AccountManagementForm$3.class
 spotfifai\ui\DistributionForm$2.class
 com\tien\swing\UserText.class
 spotfifai\models\Playlist.class
@@ -61,6 +64,7 @@ spotfifai\states\ResultState.class
 spotfifai\ui\MusicItemForm$2.class
 com\tien\swing\PasswordText$2.class
 spotfifai\ui\MainFrame.class
+spotfifai\controller\UserController.class
 spotfifai\theme\FlatTheme.class
 spotfifai\util\audioplayer\AudioPlayerDemo$SimplePlayerListener.class
 spotfifai\dbengine\DBConnector.class

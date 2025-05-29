@@ -8,10 +8,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import spotfifai.dbengine.JDBQuery;
 import spotfifai.models.Playlist;
+import spotfifai.models.PlaylistDetail;
 
 /**
  *
@@ -25,27 +28,51 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
         super();
     }
 
-    public void queryOwnedPlaylist(String userId)
+    public Map<Integer, Playlist> queryOwnedPlaylist(String userId)
     {
-        final String sql = "SELECT * FROM Playlist WHERE userId = ?";
+        final String sql = "SELECT * FROM Playlist p "
+                + "LEFT JOIN PlaylistDetail pd ON p.playlistId = pd.playlistId "
+                + "WHERE p.userId = ?";
 
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql);)
         {
             stmt.setString(1, userId);
             ResultSet rs = stmt.executeQuery();
+
+            Map<Integer, Playlist> playlists = new HashMap<>();
+
             while (rs.next())
             {
-                Playlist playlist = new Playlist(
-                        rs.getInt("playlistId"),
-                        rs.getString("title"),
-                        rs.getString("userId")
-                );
+                Integer playlistId = rs.getInt("playlistId");
+                Playlist playlist = playlists.get(playlistId);
+                if (playlist == null)
+                {
+                    playlist = new Playlist(
+                            playlistId,
+                            rs.getString("title"),
+                            rs.getString("userId")
+                    );
+
+                    playlists.put(playlistId, playlist);
+                }
+
+                playlist.getPlaylistDetails().add(new PlaylistDetail(
+                        playlistId,
+                        rs.getString("songId")
+                ));
+                
                 addToCacheInternal(playlist);
             }
+            
+
+            return playlists;
+
         } catch (SQLException ex)
         {
             Logger.getLogger(JDBQuery.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return null;
     }
 
     @Override
@@ -113,5 +140,10 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
         }
 
         return false;
+    }
+    
+    public void clear()
+    {
+        cachedEntities.clear();
     }
 }

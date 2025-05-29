@@ -6,6 +6,9 @@ package spotfifai.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import spotfifai.dbengine.JDBQuery;
 import spotfifai.models.User;
 
@@ -34,6 +37,26 @@ public class UserDAO extends BaseDAO<User>
     @Override
     public boolean update(User entity)
     {
+         final String sql = "UPDATE [User] SET username = ?, password = ? WHERE userId = ?";
+
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setString(1, entity.getUsername());
+            stmt.setString(2, entity.getPassword());
+            stmt.setString(3, entity.getUserId());
+
+            int affected = stmt.executeUpdate();
+
+            if (affected > 0)
+            {
+                // updated
+                return true;
+            }
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(SongDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return false;
     }
 

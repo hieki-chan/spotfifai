@@ -4,7 +4,7 @@
  */
 package spotfifai.controller;
 
-import java.util.Map;
+import java.util.Collection;
 import spotfifai.dao.PlaylistDAO;
 import spotfifai.dao.PlaylistDetailDAO;
 import spotfifai.states.ResultState;
@@ -23,34 +23,20 @@ public class PlaylistsController implements IService, IAuthListener
     private final PlaylistDAO playlistDAO;
     private final PlaylistDetailDAO playlistDetailDAO;
     
-    private final Map<Integer, T> cachedEntities;
-
     public PlaylistsController(
             PlaylistDAO playlistDAO,
             PlaylistDetailDAO playlistDetailDAO)
     {
         this.playlistDAO = playlistDAO;
         this.playlistDetailDAO = playlistDetailDAO;
-
-        for (var playlistDetail : playlistDetailDAO.getEntitiesAll())
-        {
-            //System.out.println(playlistDetail.getPlaylistId());
-            //playlistDAO.debug();
-            Playlist playlist = playlistDAO.getEntity(playlistDetail.getPlaylistId());
-            playlist.getPlaylistDetails().add(playlistDetail);
-        };
         
         SpotfifaiAuth.current().addListener(this);
     }
 
-    public PlaylistDAO getPlaylistDAO()
-    {
-        return playlistDAO;
-    }
     
-    public void getOwnedPlaylists()
+    public Collection<Playlist> getOwnedPlaylists()
     {
-        
+        return playlistDAO.getEntitiesAll();
     }
 
     public Playlist onCreateNew()
@@ -112,6 +98,6 @@ public class PlaylistsController implements IService, IAuthListener
     @Override
     public void onSignedOut()
     {
-        playlistDAO.
+        playlistDAO.clear();
     }
 }
