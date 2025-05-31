@@ -4,10 +4,20 @@
  */
 package spotfifai.ui.auth;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import spotfifai.controller.SpotfifaiAuth;
 import spotfifai.controller.UserController;
 import spotfifai.models.User;
+import spotfifai.ui.SongEditorForm;
+import spotfifai.util.ImageUtil;
 import spotfifai.util.located.ServiceLocator;
 
 /**
@@ -38,6 +48,7 @@ public class AccountManagementForm extends javax.swing.JPanel
         passwordField.setText(u.getPassword());
         passwordField.setEditable(isEditing);
         buttonEdition.setText("Edit");
+        labelIcon.setIcon(ImageUtil.getIcon(u.getIconData(), 80, 80));
     }
 
     /**
@@ -51,7 +62,7 @@ public class AccountManagementForm extends javax.swing.JPanel
     {
 
         buttonEdition = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        labelIcon = new javax.swing.JLabel();
         txtFieldUserName = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         passwordField = new javax.swing.JPasswordField();
@@ -68,10 +79,17 @@ public class AccountManagementForm extends javax.swing.JPanel
             }
         });
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/fifai.png"))); // NOI18N
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel1.setPreferredSize(new java.awt.Dimension(80, 80));
+        labelIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/fifai.png"))); // NOI18N
+        labelIcon.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        labelIcon.setPreferredSize(new java.awt.Dimension(80, 80));
+        labelIcon.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                labelIconMouseClicked(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setLabelFor(passwordField);
@@ -121,7 +139,7 @@ public class AccountManagementForm extends javax.swing.JPanel
                             .addComponent(passwordField)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(139, 139, 139)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(labelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(96, 96, 96)
                         .addComponent(buttonEdition, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -133,7 +151,7 @@ public class AccountManagementForm extends javax.swing.JPanel
                 .addContainerGap()
                 .addComponent(labelUID)
                 .addGap(7, 7, 7)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -155,8 +173,25 @@ public class AccountManagementForm extends javax.swing.JPanel
         if (isEditing)
         {
             User u = SpotfifaiAuth.current().getCurrentUser();
-            u.setUsername(txtFieldUserName.getText());
-            u.setPassword(new String(passwordField.getPassword()));
+            
+            String newUserName = txtFieldUserName.getText();
+            String newPassword = new String(passwordField.getPassword());
+            if(!SpotfifaiAuth.current().checkLength(newUserName))
+            {
+                JOptionPane.showMessageDialog(null, "Username must at least 8 characters long.", 
+                        "Invalid", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if(!SpotfifaiAuth.current().isPasswordValid(newPassword))
+            {
+                JOptionPane.showMessageDialog(null, "Password must at least 8 characters long and contain at least one number..", 
+                        "Invalid", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            u.setUsername(newUserName);
+            u.setPassword(newPassword);
             userController.updateUser(u);
             showUserInfo(u);
         } else
@@ -180,13 +215,38 @@ public class AccountManagementForm extends javax.swing.JPanel
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordFieldActionPerformed
 
+    private void labelIconMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_labelIconMouseClicked
+    {//GEN-HEADEREND:event_labelIconMouseClicked
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter restrict = new FileNameExtensionFilter("Image files (JPG, JPEG, PNG)", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(restrict);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION)
+        {
+            try
+            {
+                User u = SpotfifaiAuth.current().getCurrentUser();
+                byte[] iconData = Files.readAllBytes(fileChooser.getSelectedFile().toPath());
+                u.setIconData(iconData);
+                labelIcon.setIcon(new ImageIcon(iconData));
+
+            } catch (IOException ex)
+            {
+                Logger.getLogger(SongEditorForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_labelIconMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonEdition;
     private javax.swing.JButton buttonSignout;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel labelIcon;
     private javax.swing.JLabel labelUID;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JTextField txtFieldUserName;

@@ -18,6 +18,7 @@ import spotfifai.models.PlaylistDetail;
  */
 public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
 {
+
     @Override
     public boolean update(PlaylistDetail entity)
     {
@@ -25,13 +26,32 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
     }
 
     @Override
-    boolean delete(PlaylistDetail entity)
+    public boolean delete(PlaylistDetail entity)
     {
-        //not implemented;
+        System.out.println("del" + entity.getPlaylistId() + " " + entity.getSongId());
+        String sql = "DELETE FROM PlaylistDetail WHERE playlistId = ? and songId = ?";
+
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setInt(1, entity.getPlaylistId());
+            stmt.setString(2, entity.getSongId());
+            
+            int affected = stmt.executeUpdate();
+            if (affected > 0)
+            {
+                removeFromCacheInternal(entity);
+                return true;
+            }
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(PlaylistDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         return false;
     }
 
-    public int delete(int playlistId)
+    public int deleteFromPlaylistAll(int playlistId)
     {
         String sql = "DELETE FROM PlaylistDetail WHERE playlistId = ?";
 
@@ -69,6 +89,24 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
         return -1;
     }
 
+    public boolean deleteSongInPlaylists(String songId)
+    {
+        final String sql = "DELETE FROM PlaylistDetail WHERE songId = ?";
+
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql)) {
+
+            stmt.setString(1, songId);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected >= 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
+    
     @Override
     public boolean add(PlaylistDetail entity)
     {

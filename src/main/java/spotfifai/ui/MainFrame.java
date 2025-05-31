@@ -10,8 +10,10 @@ import spotfifai.controller.*;
 import spotfifai.controller.MusicPlayerController;
 import spotfifai.models.Playlist;
 import spotfifai.models.Song;
+import spotfifai.models.User;
 import spotfifai.ui.auth.AccountManagementForm;
 import spotfifai.ui.auth.AuthFrame;
+import spotfifai.util.ImageUtil;
 import spotfifai.util.SpotfifaiDialog;
 import spotfifai.util.TimeUtil;
 import spotfifai.util.located.ResourceLocator;
@@ -98,7 +100,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         var homeMenu = new MenuItemForm("Home", "Discover top songs", ResourceLocator.getIcon("home_icon.png"));
         homeMenu.setOnUserClicked(() ->
         {
-            homeMenu.setContentTab(tabSystem.viewTab(HomeForm.class));
+            homeMenu.setContentTab(tabSystem.viewTab(new HomeForm()));
         });
         tabSystem.addMenuItem(homeMenu);
 
@@ -118,7 +120,9 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         {
             createNewPlayListMenu(playlist);
         }
-        tabSystem.setSelect(homeMenu);
+
+        homeMenu.setContentTab(tabSystem.viewTab(new HomeForm()));
+        //tabSystem.setSelect(homeMenu);
     }
 
     private void setSelectedSong(Song song, float d)
@@ -127,6 +131,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         labelArtistName.setText("hieu onichan");
         labelAudioLength.setText(TimeUtil.getTimeInString(d));
         buttonPlay.setIcon(ResourceLocator.getIcon("pause_icon.png"));
+        labelMusicIcon.setIcon(ImageUtil.getIcon(song.getIconData(), 70, 70));
     }
 
     private void createNewPlayListMenu(Playlist playlist)
@@ -151,11 +156,12 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
     }
 
     @Override
-    public void onSignedIn()
+    public void onSignedIn(User user)
     {
         labelWelcome.setText("Welcome: " + SpotfifaiAuth.current().getCurrentUser().getUsername());
         initTabMenu();
-        buttonNewPlaylist.setVisible(true);
+        buttonNewPlaylist.setEnabled(true);
+        buttonAccount.setIcon(ImageUtil.getIcon(user.getIconData(), buttonAccount.getWidth(), buttonAccount.getHeight()));
     }
 
     @Override
@@ -164,6 +170,8 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         labelWelcome.setText("Sign in here");
         initTabMenu();
         buttonNewPlaylist.setEnabled(false);
+        buttonAccount.setIcon(new ImageIcon());
+        //buttonAccount.setText("Sign in");
     }
 
     @SuppressWarnings("unchecked")
@@ -184,7 +192,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         jScrollPane2 = new javax.swing.JScrollPane();
         panelContentContainer = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        musicIcon = new javax.swing.JLabel();
+        labelMusicIcon = new javax.swing.JLabel();
         labelSongName = new javax.swing.JLabel();
         labelArtistName = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
@@ -307,7 +315,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
             topbarContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, topbarContainerLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(labelWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(19, 19, 19))
@@ -361,7 +369,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
 
         jPanel1.setBackground(new java.awt.Color(2, 2, 2));
 
-        musicIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
+        labelMusicIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
 
         labelSongName.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         labelSongName.setForeground(new java.awt.Color(255, 255, 255));
@@ -408,11 +416,25 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/next_icon.png"))); // NOI18N
         jButton2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton2.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setBackground(new java.awt.Color(2, 2, 2));
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/previous_icon.png"))); // NOI18N
         jButton3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton3.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -460,9 +482,9 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addComponent(musicIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(29, 29, 29)
+                .addComponent(labelMusicIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labelArtistName)
                     .addComponent(labelSongName, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -473,16 +495,17 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGap(15, 15, 15)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelMusicIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(labelSongName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(labelArtistName))
-                    .addComponent(musicIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addComponent(labelArtistName)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -550,6 +573,16 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         }
     }//GEN-LAST:event_buttonAccountActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton2ActionPerformed
+    {//GEN-HEADEREND:event_jButton2ActionPerformed
+        musicPlayerController.nextSong();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButton3ActionPerformed
+    {//GEN-HEADEREND:event_jButton3ActionPerformed
+        musicPlayerController.previousSong();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     public static void main(String args[])
     {
         /* Set the Nimbus look and feel */
@@ -609,10 +642,10 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel labelArtistName;
     private javax.swing.JLabel labelAudioLength;
+    private javax.swing.JLabel labelMusicIcon;
     private javax.swing.JLabel labelProgress;
     private javax.swing.JLabel labelSongName;
     private javax.swing.JLabel labelWelcome;
-    private javax.swing.JLabel musicIcon;
     private javax.swing.JPanel panelContentContainer;
     private javax.swing.JPanel panelLeft;
     private javax.swing.JPanel panelRight;

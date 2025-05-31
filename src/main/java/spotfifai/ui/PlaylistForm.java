@@ -6,6 +6,7 @@ package spotfifai.ui;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import spotfifai.controller.MusicPlayerController;
 import spotfifai.controller.PlaylistsController;
 import spotfifai.controller.SongDistributorController;
 import spotfifai.models.Playlist;
@@ -17,9 +18,10 @@ import spotfifai.util.located.ServiceLocator;
  */
 public class PlaylistForm extends javax.swing.JPanel
 {
-
+    
     PlaylistsController playlistController;
     SongDistributorController songController;
+    MusicPlayerController musicPlayer;
     MenuItemForm activeMenuItem;
     Playlist currentPlaylist;
 
@@ -32,7 +34,22 @@ public class PlaylistForm extends javax.swing.JPanel
 
         playlistController = ServiceLocator.get(PlaylistsController.class);
         songController = ServiceLocator.get(SongDistributorController.class);
+        musicPlayer = ServiceLocator.get(MusicPlayerController.class);
+        
+        tableSongs.getColumn("Play").setCellRenderer(new ButtonRenderer());
+        tableSongs.getColumn("Play").setCellEditor(new ButtonEditor(tableSongs, e ->
+        {
+            
+        }));
+        
+        tableSongs.getColumn("Remove").setCellRenderer(new ButtonRenderer());
+        tableSongs.getColumn("Remove").setCellEditor(new ButtonEditor(tableSongs, e ->
+        {
+            playlistController.removeSongFromPlaylist(currentPlaylist.getPlaylistDetails().get(e), currentPlaylist);
+            loadPlaylistSongs();
+        }));
     }
+    
 
     public void setPlaylist(Playlist playlist, MenuItemForm selectedMenuItem)
     {
@@ -54,9 +71,9 @@ public class PlaylistForm extends javax.swing.JPanel
         {
             for (var song : songsInPlaylist.values())
             {
-                tableModel.addRow(new Object[]
+                tableModel.insertRow(0, new Object[]
                 {
-                    song.getTitle(), song.getDescription(), song.getArtistId(), " "
+                    song.getTitle(), song.getDescription(), song.getArtistId(), "Play", "Remove"
                 });
             }
         }
@@ -103,20 +120,20 @@ public class PlaylistForm extends javax.swing.JPanel
         tableSongs.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][]
             {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String []
             {
-                "Title", "Description", "Artist", "Play"
+                "Title", "Description", "Artist", "Play", "Remove"
             }
         )
         {
             boolean[] canEdit = new boolean []
             {
-                false, false, false, true
+                false, false, false, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex)
@@ -127,7 +144,16 @@ public class PlaylistForm extends javax.swing.JPanel
         tableSongs.setRowHeight(50);
         tableSongs.setShowGrid(true);
         tableSongs.setShowVerticalLines(false);
+        tableSongs.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tableSongs);
+        tableSongs.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        if (tableSongs.getColumnModel().getColumnCount() > 0)
+        {
+            tableSongs.getColumnModel().getColumn(3).setResizable(false);
+            tableSongs.getColumnModel().getColumn(3).setPreferredWidth(50);
+            tableSongs.getColumnModel().getColumn(4).setResizable(false);
+            tableSongs.getColumnModel().getColumn(4).setPreferredWidth(50);
+        }
 
         buttonPlayAll.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         buttonPlayAll.setText("Play All");
@@ -164,8 +190,8 @@ public class PlaylistForm extends javax.swing.JPanel
                         .addComponent(buttonDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
                         .addComponent(buttonPlayAll, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE))
                     .addComponent(labelTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -187,7 +213,7 @@ public class PlaylistForm extends javax.swing.JPanel
 
     private void buttonPlayAllActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonPlayAllActionPerformed
     {//GEN-HEADEREND:event_buttonPlayAllActionPerformed
-        
+        musicPlayer.playAPlaylist(currentPlaylist);
     }//GEN-LAST:event_buttonPlayAllActionPerformed
 
 

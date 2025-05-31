@@ -11,6 +11,7 @@ import spotfifai.states.ResultState;
 import spotfifai.models.Playlist;
 import spotfifai.models.PlaylistDetail;
 import spotfifai.models.Song;
+import spotfifai.models.User;
 import spotfifai.util.located.IService;
 
 /**
@@ -58,7 +59,7 @@ public class PlaylistsController implements IService, IAuthListener
             return false;
         }
 
-        return playlistDetailDAO.delete(playlist.getPlaylistId()) >= 0 && playlistDAO.delete(playlist);
+        return playlistDetailDAO.deleteFromPlaylistAll(playlist.getPlaylistId()) >= 0 && playlistDAO.delete(playlist);
     }
 
     public ResultState addSongToPlaylist(Song song, Playlist playlist)
@@ -79,9 +80,12 @@ public class PlaylistsController implements IService, IAuthListener
         return ResultState.SUCCESS;
     }
 
-    public void removeSongFromPlaylist()
+    public void removeSongFromPlaylist(PlaylistDetail playlistDetail, Playlist playlist)
     {
-
+        if(playlistDetailDAO.delete(playlistDetail))
+        {
+            playlist.getPlaylistDetails().remove(playlistDetail);
+        }
     }
 
     private String getNewPlaylistName()
@@ -90,7 +94,7 @@ public class PlaylistsController implements IService, IAuthListener
     }
 
     @Override
-    public void onSignedIn()
+    public void onSignedIn(User user)
     {
         playlistDAO.queryOwnedPlaylist(SpotfifaiAuth.current().getCurrentUser().getUserId());
     }

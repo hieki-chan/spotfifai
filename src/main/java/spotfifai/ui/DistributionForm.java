@@ -4,12 +4,14 @@
  */
 package spotfifai.ui;
 
-import javax.swing.JCheckBox;
 import javax.swing.table.DefaultTableModel;
 import spotfifai.controller.IAuthListener;
+import spotfifai.controller.MusicPlayerController;
 import spotfifai.controller.SongDistributorController;
 import spotfifai.controller.SpotfifaiAuth;
 import spotfifai.models.Song;
+import spotfifai.models.User;
+import spotfifai.util.ImageUtil;
 import spotfifai.util.SpotfifaiDialog;
 import spotfifai.util.located.ServiceLocator;
 
@@ -21,6 +23,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
 {
 
     SongDistributorController songDistributor;
+    MusicPlayerController musicPlayer;
     Song selectedSong;
 
     /**
@@ -29,10 +32,11 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
     public DistributionForm()
     {
         initComponents();
-        
+
         SpotfifaiAuth.current().addListener(this);
-        
+
         songDistributor = ServiceLocator.get(SongDistributorController.class);
+        musicPlayer = ServiceLocator.get(MusicPlayerController.class);
         songDistributor.getSongDAO().addListener(() ->
         {
             loadSongs();
@@ -40,7 +44,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
 
         tableSelectionEvt();
         loadSongs();
-        showSongInfo("Sample title", "Sample description, tell about your song here...");
+        //showSongInfo("Sample title", "Sample description, tell about your song here...", null);
     }
 
     private void tableSelectionEvt()
@@ -54,7 +58,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
                 {
                     String songId = (String) tableSongs.getValueAt(selectedRow, 0);
                     selectedSong = songDistributor.getOwnedSongs().get(songId);
-                    showSongInfo(selectedSong.getTitle(), selectedSong.getDescription());
+                    showSongInfo(selectedSong.getTitle(), selectedSong.getDescription(), selectedSong.getIconData());
                 }
             }
         });
@@ -85,7 +89,10 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
         tableSongs.setModel(tableModel);
 
         tableSongs.getColumn("Play").setCellRenderer(new ButtonRenderer());
-        tableSongs.getColumn("Play").setCellEditor(new ButtonEditor(new JCheckBox(), tableSongs));
+        tableSongs.getColumn("Play").setCellEditor(new ButtonEditor(tableSongs, e ->
+        {
+            musicPlayer.playImmediately(selectedSong);
+        }));
 
         if (tableModel.getRowCount() > 0)
         {
@@ -93,14 +100,15 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
         }
     }
 
-    private void showSongInfo(String songTitle, String songDescription)
+    private void showSongInfo(String songTitle, String songDescription, byte[] iconData)
     {
         labelSongTitle.setText("<html>" + songTitle + "</html>");
         labelSongDescription.setText("<html>" + songDescription + "</html>");
+        labelSongIcon.setIcon(ImageUtil.getIcon(iconData, 150, 150));
     }
 
     @Override
-    public void onSignedIn()
+    public void onSignedIn(User user)
     {
         loadSongs();
     }
@@ -108,7 +116,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
     @Override
     public void onSignedOut()
     {
-        
+
     }
 
     /**
@@ -126,7 +134,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
         buttonPublishNewSong = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        labelSongIcon = new javax.swing.JLabel();
         labelSongTitle = new javax.swing.JLabel();
         buttonDeleteSelected = new javax.swing.JButton();
         buttonEditSelected = new javax.swing.JButton();
@@ -191,8 +199,8 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
 
         jPanel1.setBackground(new java.awt.Color(45, 45, 45));
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
-        jLabel2.setPreferredSize(new java.awt.Dimension(150, 150));
+        labelSongIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
+        labelSongIcon.setPreferredSize(new java.awt.Dimension(150, 150));
 
         labelSongTitle.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         labelSongTitle.setForeground(new java.awt.Color(255, 255, 255));
@@ -219,7 +227,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
         });
 
         labelSongDescription.setForeground(new java.awt.Color(255, 255, 255));
-        labelSongDescription.setText("description here...");
+        labelSongDescription.setText("a sample ver long description here...");
         labelSongDescription.setToolTipText("");
         labelSongDescription.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
@@ -232,7 +240,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labelSongDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelSongIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(buttonEditSelected)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -243,7 +251,7 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelSongIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(labelSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -288,8 +296,16 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
 
     private void buttonDeleteSelectedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonDeleteSelectedActionPerformed
     {//GEN-HEADEREND:event_buttonDeleteSelectedActionPerformed
-        if (selectedSong != null)
-            songDistributor.deleteSong(selectedSong);
+        if (selectedSong == null)
+        {
+            return;
+        }
+        if (songDistributor.deleteSong(selectedSong))
+        {
+            System.out.println("deleted song");
+            selectedSong = null;
+            loadSongs();
+        }
     }//GEN-LAST:event_buttonDeleteSelectedActionPerformed
 
     private void buttonPublishNewSongActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonPublishNewSongActionPerformed
@@ -309,10 +325,10 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
     private javax.swing.JButton buttonEditSelected;
     private javax.swing.JButton buttonPublishNewSong;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelSongDescription;
+    private javax.swing.JLabel labelSongIcon;
     private javax.swing.JLabel labelSongTitle;
     private javax.swing.JTable tableSongs;
     // End of variables declaration//GEN-END:variables

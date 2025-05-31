@@ -35,8 +35,12 @@ public class PlaylistDetail
     @Override
     public int hashCode()
     {
-        return Objects.hashCode(this.songId) + Objects.hashCode(this.playlistId);
+        int hash = 3;
+        hash = 79 * hash + this.playlistId;
+        hash = 79 * hash + Objects.hashCode(this.songId);
+        return hash;
     }
+    
 
     @Override
     public boolean equals(Object obj)

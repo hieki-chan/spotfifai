@@ -4,16 +4,17 @@
  */
 package spotfifai.ui;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import spotfifai.controller.SongDistributorController;
 import spotfifai.models.Song;
+import spotfifai.util.ImageUtil;
+import spotfifai.util.located.ResourceLocator;
 import spotfifai.util.located.ServiceLocator;
 
 /**
@@ -24,8 +25,6 @@ public class SongEditorForm extends javax.swing.JPanel
 {
 
     SongDistributorController songDistributor;
-    File selectedImageFile;
-    File selectedSongFile;
     Song tempSong;
 
     /**
@@ -48,18 +47,26 @@ public class SongEditorForm extends javax.swing.JPanel
         } else
         {
             tempSong = new Song();
+            try
+            {
+                tempSong.setIconData(Files.readAllBytes(ResourceLocator.getDefaultSongIconPath()));
+            } catch (IOException ex)
+            {
+                Logger.getLogger(SongEditorForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
-        setData(tempSong.getSongId(), tempSong.getTitle(), tempSong.getDescription(), tempSong.getTitle() + "(audioBytes).wav");
+        setData(tempSong.getSongId(), tempSong.getTitle(), tempSong.getDescription(), tempSong.getIconData(), tempSong.getTitle() + "(audioBytes).wav");
     }
 
-    public final void setData(String id, String title, String description, String filePath)
+    public final void setData(String id, String title, String description, byte[] iconData, String filePath)
     {
         System.out.println("edit song!");
         txtFieldSongTitle.setText(title);
         txtFieldSongDescription.setText(description);
         labelId.setText("Auto generated id: " + id);
         labelFilePath.setText(filePath);
+        labelIcon.setIcon(ImageUtil.getIcon(iconData, 150, 150));
     }
 
     private String getSongTitle()
@@ -101,9 +108,14 @@ public class SongEditorForm extends javax.swing.JPanel
 
         txtFieldSongTitle.setText("Song title");
 
+        txtFieldSongDescription.setHorizontalAlignment(javax.swing.JTextField.LEFT);
         txtFieldSongDescription.setText("Song description");
+        txtFieldSongDescription.setActionCommand("<Not Set>");
+        txtFieldSongDescription.setAlignmentX(0.0F);
+        txtFieldSongDescription.setAlignmentY(0.0F);
 
         buttonOk.setText("Ok");
+        buttonOk.setPreferredSize(new java.awt.Dimension(100, 50));
         buttonOk.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -113,6 +125,7 @@ public class SongEditorForm extends javax.swing.JPanel
         });
 
         jButton2.setText("Cancel");
+        jButton2.setPreferredSize(new java.awt.Dimension(100, 50));
 
         buttonChooseFile.setText("Choose File");
         buttonChooseFile.addActionListener(new java.awt.event.ActionListener()
@@ -127,7 +140,8 @@ public class SongEditorForm extends javax.swing.JPanel
 
         labelIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
-        labelIcon.setPreferredSize(new java.awt.Dimension(200, 200));
+        labelIcon.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        labelIcon.setPreferredSize(new java.awt.Dimension(150, 150));
         labelIcon.addMouseListener(new java.awt.event.MouseAdapter()
         {
             public void mouseClicked(java.awt.event.MouseEvent evt)
@@ -148,30 +162,33 @@ public class SongEditorForm extends javax.swing.JPanel
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(47, 47, 47)
+                .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelId, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addGroup(layout.createSequentialGroup()
-                            .addComponent(buttonOk, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(buttonChooseFile)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(labelFilePath, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(labelId, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel3)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(labelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtFieldSongDescription, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
-                                    .addComponent(txtFieldSongTitle, javax.swing.GroupLayout.Alignment.LEADING))))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(buttonChooseFile)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(labelFilePath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(45, Short.MAX_VALUE))
+                            .addGap(17, 17, 17)
+                            .addComponent(labelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(buttonOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(30, 30, 30)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtFieldSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtFieldSongDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -185,19 +202,19 @@ public class SongEditorForm extends javax.swing.JPanel
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtFieldSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(47, 47, 47)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtFieldSongDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36)
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtFieldSongDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonChooseFile)
                     .addComponent(labelFilePath))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(buttonOk, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15))
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -212,53 +229,71 @@ public class SongEditorForm extends javax.swing.JPanel
         int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION)
         {
-            selectedSongFile = fileChooser.getSelectedFile();
-            labelFilePath.setText(selectedSongFile.getAbsolutePath());
+            try
+            {
+                byte[] audioData = Files.readAllBytes(fileChooser.getSelectedFile().toPath());
+                tempSong.setAudioData(audioData);
+                labelFilePath.setText(fileChooser.getSelectedFile().getPath());
+
+            } catch (IOException ex)
+            {
+                Logger.getLogger(SongEditorForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }//GEN-LAST:event_buttonChooseFileActionPerformed
 
     private void buttonOkActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonOkActionPerformed
     {//GEN-HEADEREND:event_buttonOkActionPerformed
-        try
+        tempSong.setTitle(getSongTitle());
+        tempSong.setDescription(getSongDescription());
+        
+        if(!songDistributor.checkForSong(tempSong))
         {
-            tempSong.setTitle(getSongTitle());
-            tempSong.setDescription(getSongDescription());
-
-            if (!songDistributor.getSongDAO().contains(tempSong))
-            {
-                //publish
-                tempSong.setAudioData(Files.readAllBytes(selectedSongFile.toPath()));
-                songDistributor.upload(tempSong);
-            } 
-            else
-            {
-                //edit
-                if(selectedSongFile != null)
-                        tempSong.setAudioData(Files.readAllBytes(selectedSongFile.toPath()));
-                songDistributor.getSongDAO().update(tempSong);
-            }
-
-        } catch (IOException ex)
-        {
-            Logger.getLogger(SongEditorForm.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Invalid song Data");
+            return;
         }
         
+        if (!songDistributor.getSongDAO().contains(tempSong))
+        {
+            //publish
+            System.out.println("publish");
+            songDistributor.upload(tempSong);
+        } else
+        {
+            //edit
+            System.out.println("update");
+            if(songDistributor.update(tempSong))
+            {
+                
+            }
+        }
+
         this.setEnabled(false);
     }//GEN-LAST:event_buttonOkActionPerformed
 
     private void labelIconMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_labelIconMouseClicked
     {//GEN-HEADEREND:event_labelIconMouseClicked
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter restrict = new FileNameExtensionFilter("WAV audio files", "jpg", "jpeg", "png");
+        FileNameExtensionFilter restrict = new FileNameExtensionFilter("Image files (JPG, JPEG, PNG)", "jpg", "jpeg", "png");
         fileChooser.setFileFilter(restrict);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setAcceptAllFileFilterUsed(false);
 
         int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION)
         {
-            selectedImageFile = fileChooser.getSelectedFile();
-            labelIcon.setIcon(new ImageIcon(selectedImageFile.getAbsolutePath()));
+            try
+            {
+                byte[] iconData = Files.readAllBytes(fileChooser.getSelectedFile().toPath());
+                tempSong.setIconData(iconData);
+                labelIcon.setIcon(ImageUtil.getIcon(iconData, 150, 150));
+                System.out.println(iconData);
+
+            } catch (IOException ex)
+            {
+                Logger.getLogger(SongEditorForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_labelIconMouseClicked
 

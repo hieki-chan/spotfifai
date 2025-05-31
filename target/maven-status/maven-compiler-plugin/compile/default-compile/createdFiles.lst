@@ -8,6 +8,8 @@ com\tien\swing\RoundSplitPane.class
 com\tien\swing\ImageAvatar.class
 spotfifai\ui\MainFrame$2.class
 spotfifai\ui\auth\SignInForm$1.class
+spotfifai\App$1.class
+spotfifai\ui\auth\AccountManagementForm$4.class
 spotfifai\ui\auth\AuthFrame.class
 spotfifai\ui\PlaylistForm$2.class
 com\tien\swing\SearchText$2.class
@@ -29,6 +31,7 @@ com\tien\swing\SearchText$1.class
 spotfifai\ui\PlaylistForm$3.class
 spotfifai\ui\auth\AccountManagementForm$2.class
 spotfifai\ui\MainFrame$4.class
+spotfifai\util\ImageUtil.class
 spotfifai\ui\MusicItemForm.class
 spotfifai\controller\IAuthListener.class
 spotfifai\util\SpotfifaiDialog.class
@@ -52,6 +55,7 @@ com\tien\swing\SearchText.class
 spotfifai\ui\auth\AuthFrame$2.class
 spotfifai\ui\MainFrame$6.class
 spotfifai\ui\SongEditorForm.class
+spotfifai\ui\MainFrame$9.class
 spotfifai\dao\UserDAO.class
 spotfifai\controller\HomeController.class
 spotfifai\ui\DistributionForm$1.class
@@ -60,8 +64,10 @@ spotfifai\ui\SongEditorForm$3.class
 spotfifai\ui\DistributionForm.class
 spotfifai\ui\DistributionForm$4.class
 spotfifai\ui\MainFrame$1.class
+spotfifai\ui\MainFrame$8.class
 spotfifai\states\ResultState.class
 spotfifai\ui\MusicItemForm$2.class
+spotfifai\models\Role.class
 com\tien\swing\PasswordText$2.class
 spotfifai\ui\MainFrame.class
 spotfifai\controller\UserController.class

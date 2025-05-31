@@ -4,12 +4,14 @@
  */
 package spotfifai.controller;
 
+import spotfifai.models.User;
+
 /**
  *
  * @author admin
  */
 public interface IAuthListener
 {
-    void onSignedIn();
+    void onSignedIn(User user);
     void onSignedOut();
 }

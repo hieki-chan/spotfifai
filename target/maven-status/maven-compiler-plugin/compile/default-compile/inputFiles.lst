@@ -17,6 +17,7 @@ S:\Java\spotfifai\src\main\java\spotfifai\util\audioplayer\PlayerEvent.java
 S:\Java\spotfifai\src\main\java\spotfifai\models\User.java
 S:\Java\spotfifai\src\main\java\spotfifai\theme\FlatTheme.java
 S:\Java\spotfifai\src\main\java\com\tien\swing\SearchText.java
+S:\Java\spotfifai\src\main\java\spotfifai\models\Role.java
 S:\Java\spotfifai\src\main\java\spotfifai\ui\MenuItemForm.java
 S:\Java\spotfifai\src\main\java\spotfifai\util\SpotfifaiDialog.java
 S:\Java\spotfifai\src\main\java\spotfifai\controller\IMusicListenter.java
@@ -35,6 +36,7 @@ S:\Java\spotfifai\src\main\java\spotfifai\App.java
 S:\Java\spotfifai\src\main\java\spotfifai\controller\HomeController.java
 S:\Java\spotfifai\src\main\java\spotfifai\controller\IAuthListener.java
 S:\Java\spotfifai\src\main\java\spotfifai\dao\SongDAO.java
+S:\Java\spotfifai\src\main\java\spotfifai\util\ImageUtil.java
 S:\Java\spotfifai\src\main\java\spotfifai\util\audioplayer\AudioPlayerDemo.java
 S:\Java\spotfifai\src\main\java\spotfifai\util\audioplayer\PlayerException.java
 S:\Java\spotfifai\src\main\java\spotfifai\dbengine\JDBQuery.java

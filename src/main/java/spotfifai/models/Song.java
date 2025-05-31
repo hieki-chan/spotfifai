@@ -19,20 +19,22 @@ public class Song
     private String description;
     private String artistId;
     private byte[] audioData;
+    private byte[] iconData;
 
-    public Song(String songId, String title, String description, byte[] audioData, String artistId)
+    public Song(String songId, String title, String description, byte[] audioData, String artistId, byte[] iconData)
     {
         this.songId = songId;
         this.title = title;
         this.description = description;
         this.audioData = audioData;
         this.artistId = artistId;
+        this.iconData = iconData;
     }
 
     public Song(String title, String description, byte[] audioData, String artistId)
     {
         String uid = UUID.randomUUID().toString().substring(0, 20);
-        this(uid, title, description, audioData, artistId);
+        this(uid, title, description, audioData, artistId, null);
     }
 
     public Song()
@@ -42,7 +44,7 @@ public class Song
 
     public Song(Song other)
     {
-        this(other.songId, other.title, other.description, other.audioData, other.artistId);
+        this(other.songId, other.title, other.description, other.audioData, other.artistId, other.iconData);
     }
 
     public String getSongId()
@@ -93,6 +95,16 @@ public class Song
     public void setAudioData(byte[] audioData)
     {
         this.audioData = audioData;
+    }
+
+    public byte[] getIconData()
+    {
+        return iconData;
+    }
+
+    public void setIconData(byte[] iconData)
+    {
+        this.iconData = iconData;
     }
 
     @Override

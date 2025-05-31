@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
 import spotfifai.dao.SongDAO;
+import spotfifai.models.Playlist;
 import spotfifai.ui.MainFrame;
 import spotfifai.models.Song;
 import spotfifai.util.audioplayer.AudioPlayer;
@@ -28,10 +29,13 @@ public class MusicPlayerController implements IPlayerListener, IService
 
     SongDAO songDAO;
     AudioPlayer audioPlayer;
+    Playlist currentPlaylist;
+    int currentIndex;
     Song currentSong;
     File tempFile;
     boolean loop;
     boolean seeking;
+    boolean shouldNext;
 
     IMusicListenter musicListener;
 
@@ -41,15 +45,6 @@ public class MusicPlayerController implements IPlayerListener, IService
         this.songDAO = songDAO;
         // Add a basic listener
         audioPlayer.addPlayerListener(this);
-//        try
-//        {
-//            // Open audio file
-//            audioPlayer.open("S:\\Java\\spotfifai\\src\\main\\resources\\resources\\A Thousand Years.wav");
-//            audioPlayer.playDelayed();
-//        } catch (PlayerException ex)
-//        {
-//            Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
     }
 
     public void setListener(IMusicListenter musicListener)
@@ -61,10 +56,67 @@ public class MusicPlayerController implements IPlayerListener, IService
     {
         return audioPlayer.getMaxMicrosecondPosition();
     }
-    
+
     public boolean isPlaying()
     {
         return audioPlayer.getStatus() == AudioPlayer.PLAYING;
+    }
+
+    public void playAPlaylist(Playlist playlist)
+    {
+        currentIndex = -1;
+        //currentPlaylist = null;
+        //audioPlayer.stop();
+        currentPlaylist = playlist;
+        nextSong();
+    }
+
+    public void nextSong()
+    {
+        if (currentPlaylist == null)
+        {
+            return;
+        }
+
+        currentIndex++;
+        playCurrentSongInPlaylist();
+    }
+
+    public void previousSong()
+    {
+        if (currentPlaylist == null)
+        {
+            return;
+        }
+
+        currentIndex--;
+        playCurrentSongInPlaylist();
+    }
+
+    private void playCurrentSongInPlaylist()
+    {
+        if (currentPlaylist == null)
+        {
+            return;
+        }
+        System.out.println(currentIndex);
+        var playlistSongs = currentPlaylist.getPlaylistDetails();
+        if (currentIndex >= playlistSongs.size() || currentIndex < 0)
+        {
+            currentIndex = playlistSongs.size() - 1;
+            return;
+        }
+
+        String songId = playlistSongs.get(currentIndex).getSongId();
+        Song song = songDAO.getSongWithAudioData(songId);
+        System.out.println(song);
+
+        if (song != null)
+        {
+            shouldNext = false;
+            playImmediately(song);
+            shouldNext = true;
+        }
     }
 
     public void playDelayed(Song song)
@@ -77,7 +129,7 @@ public class MusicPlayerController implements IPlayerListener, IService
         timer.start();
     }
 
-    private void playImmediately(Song song)
+    public void playImmediately(Song song)
     {
         if (song == currentSong)
         {
@@ -86,20 +138,27 @@ public class MusicPlayerController implements IPlayerListener, IService
 
         if (tempFile != null)
         {
+            System.out.println("temp file deleted");
+            audioPlayer.close();
             tempFile.delete();
         }
         try
         {
             currentSong = song;
-            
-            if(currentSong.getAudioData() == null)
-                currentSong.setAudioData(songDAO.getAudioData(song.getSongId()));
-            else
-                return;
-            
+
+            if (currentSong.getAudioData() == null)
+            {
+                currentSong.setAudioData(songDAO.getSongWithAudioData(currentSong.getSongId()).getAudioData());
+            } else
+            {
+                //return;
+            }
+
+            //System.out.println(currentSong.getAudioData());
             byte[] audioBytes = song.getAudioData();
 
             tempFile = File.createTempFile("music", ".wav");
+            tempFile.deleteOnExit();
 
             try (FileOutputStream fos = new FileOutputStream(tempFile))
             {
@@ -156,6 +215,10 @@ public class MusicPlayerController implements IPlayerListener, IService
         {
             seeking = true;
             audioPlayer.seek(microsecondPosition);
+            if (!isPlaying())
+            {
+                audioPlayer.play();
+            }
             //player.playDelayed();
         } catch (PlayerException ex)
         {
@@ -169,6 +232,15 @@ public class MusicPlayerController implements IPlayerListener, IService
         loop = state;
     }
 
+    public void dispose()
+    {
+        if(tempFile != null)
+        {
+            tempFile.delete();
+            audioPlayer.close();
+        }
+    }
+    
     @Override
     public void opening(Object dataSource)
     {
@@ -233,23 +305,7 @@ public class MusicPlayerController implements IPlayerListener, IService
     @Override
     public void stopped()
     {
-        if (loop)
-        {
-            try
-            {
-                audioPlayer.seek(0);
-                audioPlayer.play();
-            } catch (PlayerException ex)
-            {
-                Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else
-        {
-//            if (tempFile != null)
-//            {
-//                tempFile.delete();
-//            }
-        }
+
     }
 
     @Override
@@ -270,6 +326,26 @@ public class MusicPlayerController implements IPlayerListener, IService
     public void endOfMedia()
     {
         System.out.println("End of media reached");
+        if (loop)
+        {
+            try
+            {
+                audioPlayer.seek(0);
+                audioPlayer.play();
+            } catch (PlayerException ex)
+            {
+                Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else
+        {
+//            error  but i dont know why
+//            if (tempFile != null)
+//            {
+//                tempFile.delete();
+//            }
+
+        }
+        nextSong();
     }
 
     @Override

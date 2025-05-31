@@ -13,6 +13,7 @@ import spotfifai.models.Song;
 import spotfifai.states.ResultState;
 import spotfifai.util.located.ServiceLocator;
 import spotfifai.theme.Theme;
+import spotfifai.util.ImageUtil;
 
 /**
  *
@@ -38,7 +39,8 @@ public class MusicItemForm extends javax.swing.JPanel
 
         labelSongTitle.setText(song.getTitle());
         labelArtistName.setText(song.getArtistId());
-        labelDescription.setText(song.getDescription());
+        labelDescription.setText("<html>" + song.getDescription() + "</html>");
+        labelIcon.setIcon(ImageUtil.getIcon(song.getIconData(), 180, 180));
     }
 
     /**
@@ -52,7 +54,7 @@ public class MusicItemForm extends javax.swing.JPanel
     {
 
         panelContainer = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        labelIcon = new javax.swing.JLabel();
         labelSongTitle = new javax.swing.JLabel();
         labelArtistName = new javax.swing.JLabel();
         buttonAddToPlaylist = new javax.swing.JButton();
@@ -86,8 +88,8 @@ public class MusicItemForm extends javax.swing.JPanel
             }
         });
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
-        jLabel1.setPreferredSize(new java.awt.Dimension(100, 100));
+        labelIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
+        labelIcon.setPreferredSize(new java.awt.Dimension(180, 180));
 
         labelSongTitle.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         labelSongTitle.setForeground(new java.awt.Color(255, 255, 255));
@@ -110,7 +112,8 @@ public class MusicItemForm extends javax.swing.JPanel
         });
 
         labelDescription.setForeground(new java.awt.Color(255, 255, 255));
-        labelDescription.setText("description here...");
+        labelDescription.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        labelDescription.setText("a very long sample description here...");
         labelDescription.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
         javax.swing.GroupLayout panelContainerLayout = new javax.swing.GroupLayout(panelContainer);
@@ -127,7 +130,7 @@ public class MusicItemForm extends javax.swing.JPanel
                     .addGroup(panelContainerLayout.createSequentialGroup()
                         .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(labelDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelArtistName, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -135,7 +138,7 @@ public class MusicItemForm extends javax.swing.JPanel
         panelContainerLayout.setVerticalGroup(
             panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelContainerLayout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(buttonAddToPlaylist, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -153,9 +156,9 @@ public class MusicItemForm extends javax.swing.JPanel
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
                 .addComponent(panelContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -215,9 +218,9 @@ public class MusicItemForm extends javax.swing.JPanel
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonAddToPlaylist;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel labelArtistName;
     private javax.swing.JLabel labelDescription;
+    private javax.swing.JLabel labelIcon;
     private javax.swing.JLabel labelSongTitle;
     private javax.swing.JPanel panelContainer;
     // End of variables declaration//GEN-END:variables

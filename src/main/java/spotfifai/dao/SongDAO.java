@@ -23,6 +23,8 @@ import spotfifai.models.Song;
 public final class SongDAO extends BaseDAO<Song>
 {
 
+    private Map<String, Song> ownedSongsCache = new HashMap<>();
+
     public SongDAO()
     {
         super();
@@ -31,7 +33,7 @@ public final class SongDAO extends BaseDAO<Song>
     public Map<String, Song> queryAllSongs()
     {
         Map<String, Song> result = new HashMap<>();
-        final String sql = "SELECT songId, title, description, userId FROM Song";
+        final String sql = "SELECT songId, title, description, userId, iconData FROM Song";
 
         JDBQuery.selectAllFrom(super.getConnection(), sql, (rs) ->
         {
@@ -40,7 +42,8 @@ public final class SongDAO extends BaseDAO<Song>
                     rs.getString("title"),
                     rs.getString("description"),
                     null,
-                    rs.getString("userId")
+                    rs.getString("userId"),
+                    rs.getBytes("iconData")
             );
             result.put(song.getSongId(), song);
         });
@@ -48,7 +51,7 @@ public final class SongDAO extends BaseDAO<Song>
         return result;
     }
 
-    public Map<String, Song> queryOwnedSongs(String userId)
+    public void queryOwnedSongs(String userId)
     {
         final String sql = "SELECT * FROM Song WHERE userId = ?";
 
@@ -57,7 +60,6 @@ public final class SongDAO extends BaseDAO<Song>
             stmt.setString(1, userId);
             ResultSet rs = stmt.executeQuery();
 
-            Map<String, Song> ownedSongs = new HashMap<>();
             while (rs.next())
             {
                 Song song = new Song(
@@ -65,25 +67,42 @@ public final class SongDAO extends BaseDAO<Song>
                         rs.getString("title"),
                         rs.getString("description"),
                         rs.getBytes("audioData"),
-                        userId
+                        userId,
+                        rs.getBytes("iconData")
                 );
-                ownedSongs.put(song.getSongId(), song);
+                ownedSongsCache.put(song.getSongId(), song);
             }
-            return ownedSongs;
 
         } catch (SQLException ex)
         {
 
         }
-        return null;
+    }
+
+    public Map<String, Song> getOwnedSongsCache()
+    {
+        return ownedSongsCache;
+    }
+    
+    @Override
+    public boolean contains(Song entity)
+    {        
+        return ownedSongsCache.containsKey(entity.getSongId());
+    }
+    
+    public void clearCache()
+    {
+        ownedSongsCache.clear();
     }
 
     public Map<String, Song> getSongs(List<String> songIds)
     {
-        if(songIds.size() == 0)
+        if (songIds.size() == 0)
+        {
             return null;
-        
-        String sql = "SELECT songId, title, description, userId FROM Song WHERE songId IN (" + String.join(",", Collections.nCopies(songIds.size(), "?")) + ")";
+        }
+
+        String sql = "SELECT songId, title, description, userId, iconData FROM Song WHERE songId IN (" + String.join(",", Collections.nCopies(songIds.size(), "?")) + ")";
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
             for (int i = 0; i < songIds.size(); i++)
@@ -101,14 +120,14 @@ public final class SongDAO extends BaseDAO<Song>
                         rs.getString("title"),
                         rs.getString("description"),
                         null,
-                        rs.getString("userId")
+                        rs.getString("userId"),
+                        rs.getBytes("iconData")
                 );
                 result.put(song.getSongId(), song);
             }
 
             return result;
-        } 
-        catch (SQLException ex)
+        } catch (SQLException ex)
         {
             Logger.getLogger(SongDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -116,9 +135,9 @@ public final class SongDAO extends BaseDAO<Song>
         return null;
     }
 
-    public byte[] getAudioData(String songId)
+    public Song getSongWithAudioData(String songId)
     {
-        final String sql = "SELECT audioData FROM Song WHERE songId = ?";
+        final String sql = "SELECT * FROM Song WHERE songId = ?";
 
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
@@ -127,7 +146,15 @@ public final class SongDAO extends BaseDAO<Song>
 
             if (rs.next())
             {
-                return rs.getBytes("audioData");
+                Song song = new Song(
+                        rs.getString("songId"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getBytes("audioData"),
+                        rs.getString("userId"),
+                        rs.getBytes("iconData")
+                );
+                return song;
             }
 
         } catch (SQLException ex)
@@ -136,18 +163,19 @@ public final class SongDAO extends BaseDAO<Song>
         }
         return null;
     }
-    
+
     @Override
     public boolean update(Song entity)
     {
-        final String sql = "UPDATE Song SET title = ?, description = ?, audioData = ? WHERE songId = ?";
+        final String sql = "UPDATE Song SET title = ?, description = ?, audioData = ?, iconData = ? WHERE songId = ?";
 
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
             stmt.setString(1, entity.getTitle());
             stmt.setString(2, entity.getDescription());
             stmt.setBytes(3, entity.getAudioData());
-            stmt.setString(4, entity.getSongId());
+            stmt.setBytes(4, entity.getIconData());
+            stmt.setString(5, entity.getSongId());
 
             int affected = stmt.executeUpdate();
 
@@ -176,7 +204,7 @@ public final class SongDAO extends BaseDAO<Song>
 
             if (affected > 0)
             {
-                removeFromCacheInternal(entity);
+                ownedSongsCache.remove(entity.getSongId());
                 return true;
             }
 
@@ -196,7 +224,7 @@ public final class SongDAO extends BaseDAO<Song>
             return false;
         }
 
-        final String sql = "INSERT INTO Song (songId, title, description, audioData, userId) VALUES (?, ?, ?, ?, ?)";
+        final String sql = "INSERT INTO Song (songId, title, description, audioData, userId, iconData) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
             stmt.setString(1, entity.getSongId());
@@ -204,11 +232,12 @@ public final class SongDAO extends BaseDAO<Song>
             stmt.setString(3, entity.getDescription());
             stmt.setBytes(4, entity.getAudioData());
             stmt.setString(5, entity.getArtistId());
+            stmt.setBytes(6, entity.getIconData());
             int affected = stmt.executeUpdate();
 
             if (affected > 0)
             {
-                addToCacheInternal(entity);
+                ownedSongsCache.put(entity.getSongId(), entity);
                 return true;
             }
 

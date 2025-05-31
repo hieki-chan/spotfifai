@@ -56,7 +56,7 @@ public class Playlist implements Comparable<Playlist>
     {
         return playlistDetails;
     }
-
+    
     public void setPlaylistDetails(List<PlaylistDetail> songIds)
     {
         this.playlistDetails = songIds;

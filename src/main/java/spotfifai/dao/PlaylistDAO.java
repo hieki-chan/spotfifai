@@ -55,15 +55,17 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
 
                     playlists.put(playlistId, playlist);
                 }
+                String songId = rs.getString("songId");
+                if (songId != null)
+                {
+                    playlist.getPlaylistDetails().add(new PlaylistDetail(
+                            playlistId,
+                            songId
+                    ));
+                }
 
-                playlist.getPlaylistDetails().add(new PlaylistDetail(
-                        playlistId,
-                        rs.getString("songId")
-                ));
-                
                 addToCacheInternal(playlist);
             }
-            
 
             return playlists;
 
@@ -141,7 +143,7 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
 
         return false;
     }
-    
+
     public void clear()
     {
         cachedEntities.clear();

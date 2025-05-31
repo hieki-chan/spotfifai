@@ -5,9 +5,9 @@
 package spotfifai.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import spotfifai.dao.PlaylistDetailDAO;
 import spotfifai.dao.SongDAO;
 import spotfifai.dao.UserDAO;
 import spotfifai.models.PlaylistDetail;
@@ -24,13 +24,13 @@ public class SongDistributorController implements IService, IAuthListener
 
     private final SongDAO songDAO;
     private final UserDAO userDAO;
+    private final PlaylistDetailDAO playlistDetailDAO;
 
-    private Map<String, Song> ownedSongsCache = new HashMap<>();
-
-    public SongDistributorController(SongDAO songDAO, UserDAO userDAO)
+    public SongDistributorController(SongDAO songDAO, UserDAO userDAO, PlaylistDetailDAO playlistDetailDAO)
     {
         this.songDAO = songDAO;
         this.userDAO = userDAO;
+        this.playlistDetailDAO = playlistDetailDAO;
 
         SpotfifaiAuth.current().addListener(this);
     }
@@ -42,7 +42,7 @@ public class SongDistributorController implements IService, IAuthListener
 
     public Map<String, Song> getOwnedSongs()
     {
-        return ownedSongsCache;
+        return songDAO.getOwnedSongsCache();
     }
 
     public Map<String, Song> getSongs(List<PlaylistDetail> detailList)
@@ -61,15 +61,21 @@ public class SongDistributorController implements IService, IAuthListener
         boolean isSuccess = songDAO.add(song);
         if (isSuccess)
         {
-            ownedSongsCache.put(song.getSongId(), song);
+            
         }
 
         return isSuccess;
     }
-
-    public void deleteSong(Song song)
+    
+    public boolean update(Song song)
     {
-        songDAO.delete(song);
+        return songDAO.update(song);
+    }
+
+    public boolean deleteSong(Song song)
+    {
+        playlistDetailDAO.deleteSongInPlaylists(song.getSongId());
+        return songDAO.delete(song);
     }
 
     public String getArtistNameFromSong(Song song)
@@ -77,16 +83,24 @@ public class SongDistributorController implements IService, IAuthListener
         User artist = userDAO.getEntity(song.getArtistId());
         return artist.getUsername();
     }
+    
+    public boolean checkForSong(Song song)
+    {
+        return !song.getTitle().isEmpty() && !song.getTitle().isEmpty()
+                && !song.getDescription().isBlank() && !song.getDescription().isEmpty()
+                && song.getAudioData() != null
+                && song.getIconData() != null;
+    }
 
     @Override
-    public void onSignedIn()
+    public void onSignedIn(User user)
     {
-        ownedSongsCache = songDAO.queryOwnedSongs(SpotfifaiAuth.current().getCurrentUser().getUserId());
+        songDAO.queryOwnedSongs(SpotfifaiAuth.current().getCurrentUser().getUserId());
     }
 
     @Override
     public void onSignedOut()
     {
-        ownedSongsCache = null;
+        songDAO.clearCache();
     }
 }

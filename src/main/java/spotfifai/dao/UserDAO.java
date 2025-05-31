@@ -28,7 +28,9 @@ public class UserDAO extends BaseDAO<User>
             User user = new User(
                     rs.getString("userId"),
                     rs.getString("username"),
-                    rs.getString("password")
+                    rs.getString("password"),
+                    rs.getBytes("iconData"),
+                    rs.getInt("role")
             );
             addToCacheInternal(user);
         });
@@ -37,13 +39,14 @@ public class UserDAO extends BaseDAO<User>
     @Override
     public boolean update(User entity)
     {
-         final String sql = "UPDATE [User] SET username = ?, password = ? WHERE userId = ?";
+         final String sql = "UPDATE [User] SET username = ?, password = ?, iconData = ? WHERE userId = ?";
 
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
             stmt.setString(1, entity.getUsername());
             stmt.setString(2, entity.getPassword());
-            stmt.setString(3, entity.getUserId());
+            stmt.setBytes(3, entity.getIconData());
+            stmt.setString(4, entity.getUserId());
 
             int affected = stmt.executeUpdate();
 
@@ -69,12 +72,14 @@ public class UserDAO extends BaseDAO<User>
     @Override
     public boolean add(User entity)
     {
-        String sql = "INSERT INTO [User] VALUES (?, ?, ?)";
+        String sql = "INSERT INTO [User] VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
             stmt.setString(1, entity.getUserId());
             stmt.setString(2, entity.getUsername());
             stmt.setString(3, entity.getPassword());
+            stmt.setBytes(4, entity.getIconData());
+            stmt.setInt(5, entity.getRole().getCode());
             int affected = stmt.executeUpdate();
 
             if (affected > 0)
@@ -84,6 +89,7 @@ public class UserDAO extends BaseDAO<User>
             }
         } catch (Exception e)
         {
+            System.out.println("add user falied" + e.getMessage());
         }
 
         return false;
@@ -103,7 +109,10 @@ public class UserDAO extends BaseDAO<User>
                 return new User(
                         rs.getString("userId"), 
                         rs.getString("username"), 
-                        rs.getString("password"));
+                        rs.getString("password"),
+                        rs.getBytes("iconData"),
+                        rs.getInt("role")
+                );
             }
         } catch (Exception e)
         {

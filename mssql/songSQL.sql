@@ -7,8 +7,9 @@ CREATE TABLE [User]
 	userId CHAR(10) NOT NULL PRIMARY KEY,
 	username NVARCHAR(50) UNIQUE,
 	password NCHAR(20),
+	iconData VARBINARY(MAX),
+	role INT
 )
-
 
 CREATE TABLE SONG
 (
@@ -16,7 +17,7 @@ CREATE TABLE SONG
     title NVARCHAR(100) NOT NULL UNIQUE,
 	description NVARCHAR(500),
 	audioData VARBINARY(MAX),
-	icon VARBINARY(MAX),
+	iconData VARBINARY(MAX),
 	userId CHAR(10) FOREIGN KEY REFERENCES [User](userId)
 )
 
@@ -51,11 +52,11 @@ SELECT * FROM PlaylistDetail
 
 SELECT * FROM [User]
 
-INSERT INTO [User] VALUES ('admin-123', 'admin', '123')
+INSERT INTO [User] VALUES ('admin-123', 'admin', '123', null, 1)
 
 SELECT *
 FROM Playlist p
-JOIN PlaylistDetail pd ON p.playlistId = pd.playlistId
+LEFT JOIN PlaylistDetail pd ON p.playlistId = pd.playlistId
 WHERE p.userId = 'admin-123'
 ORDER BY p.playlistId
 
