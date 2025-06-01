@@ -37,7 +37,7 @@ public class PlaylistsController implements IService, IAuthListener
     
     public Collection<Playlist> getOwnedPlaylists()
     {
-        return playlistDAO.getEntitiesAll();
+        return playlistDAO.getEntitiesAll().values();
     }
 
     public Playlist onCreateNew()

@@ -26,4 +26,9 @@ public class UserController implements IService
         System.out.println("update");
         userDAO.update(user);
     }
+    
+    public User getUser(String userId)
+    {
+        return userDAO.queryUser(userId);
+    }
 }

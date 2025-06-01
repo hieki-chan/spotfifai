@@ -1,5 +1,6 @@
-package spotfifai.ui;
+package spotfifai.view;
 
+import java.awt.Color;
 import spotfifai.controller.TabViewSystem;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -11,8 +12,8 @@ import spotfifai.controller.MusicPlayerController;
 import spotfifai.models.Playlist;
 import spotfifai.models.Song;
 import spotfifai.models.User;
-import spotfifai.ui.auth.AccountManagementForm;
-import spotfifai.ui.auth.AuthFrame;
+import spotfifai.view.auth.AccountManagementForm;
+import spotfifai.view.auth.AuthFrame;
 import spotfifai.util.ImageUtil;
 import spotfifai.util.SpotfifaiDialog;
 import spotfifai.util.TimeUtil;
@@ -26,6 +27,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
 
     PlaylistsController playlistController;
     MusicPlayerController musicPlayerController;
+    UserController userController;
 
     public MainFrame()
     {
@@ -39,10 +41,12 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         SpotfifaiAuth.current().addListener(this);
         this.playlistController = ServiceLocator.get(PlaylistsController.class);
         this.musicPlayerController = ServiceLocator.get(MusicPlayerController.class);
+        this.userController = ServiceLocator.get(UserController.class);
 
         // playDelayed progress
         sliderPlayProgress.getModel().setMaximum(1000);
         sliderPlayProgress.getModel().setMinimum(0);
+        sliderPlayProgress.setEnabled(false);
         musicPlayerController.setListener(new IMusicListenter()
         {
             @Override
@@ -104,15 +108,30 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         });
         tabSystem.addMenuItem(homeMenu);
 
-        // distribution menu
-        if (SpotfifaiAuth.current().isSignedIn())
+        if (SpotfifaiAuth.current().isSignedAsAdmin())
         {
-            var distributionMenu = new MenuItemForm("Distribution", "Manage your songs", ResourceLocator.getIcon("menu_icon.png"));
-            distributionMenu.setOnUserClicked(() ->
+            // song management
+            if (SpotfifaiAuth.current().isSignedIn())
             {
-                distributionMenu.setContentTab(tabSystem.viewTab(new DistributionForm()));
-            });
-            tabSystem.addMenuItem(distributionMenu);
+                var songManagementMenu = new MenuItemForm("Management", "Manage distributed songs", ResourceLocator.getIcon("menu_icon.png"));
+                songManagementMenu.setOnUserClicked(() ->
+                {
+                    songManagementMenu.setContentTab(tabSystem.viewTab(new SongManagementForm()));
+                });
+                tabSystem.addMenuItem(songManagementMenu);
+            }
+        } else
+        {
+            // distribution menu
+            if (SpotfifaiAuth.current().isSignedIn())
+            {
+                var distributionMenu = new MenuItemForm("Distribution", "Manage your songs", ResourceLocator.getIcon("menu_icon.png"));
+                distributionMenu.setOnUserClicked(() ->
+                {
+                    distributionMenu.setContentTab(tabSystem.viewTab(new DistributionForm()));
+                });
+                tabSystem.addMenuItem(distributionMenu);
+            }
         }
 
         // playlists menu
@@ -128,10 +147,11 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
     private void setSelectedSong(Song song, float d)
     {
         labelSongName.setText(song.getTitle());
-        labelArtistName.setText("hieu onichan");
+        labelArtistName.setText(userController.getUser(song.getArtistId()).getUsername());
         labelAudioLength.setText(TimeUtil.getTimeInString(d));
         buttonPlay.setIcon(ResourceLocator.getIcon("pause_icon.png"));
         labelMusicIcon.setIcon(ImageUtil.getIcon(song.getIconData(), 70, 70));
+        sliderPlayProgress.setEnabled(true);
     }
 
     private void createNewPlayListMenu(Playlist playlist)
@@ -160,7 +180,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
     {
         labelWelcome.setText("Welcome: " + SpotfifaiAuth.current().getCurrentUser().getUsername());
         initTabMenu();
-        buttonNewPlaylist.setEnabled(true);
+        buttonNewPlaylist.setEnabled(!SpotfifaiAuth.current().isSignedAsAdmin());
         buttonAccount.setIcon(ImageUtil.getIcon(user.getIconData(), buttonAccount.getWidth(), buttonAccount.getHeight()));
     }
 
@@ -219,11 +239,11 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         buttonNewPlaylist.setBackground(new java.awt.Color(35, 35, 35));
         buttonNewPlaylist.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/icons/add_icon.png"))); // NOI18N
         buttonNewPlaylist.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        buttonNewPlaylist.addMouseListener(new java.awt.event.MouseAdapter()
+        buttonNewPlaylist.addActionListener(new java.awt.event.ActionListener()
         {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
+            public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                buttonNewPlaylistMouseClicked(evt);
+                buttonNewPlaylistActionPerformed(evt);
             }
         });
 
@@ -233,9 +253,9 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttonNewPlaylist, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -264,7 +284,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         );
         panelTabContainerLayout.setVerticalGroup(
             panelTabContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 450, Short.MAX_VALUE)
+            .addGap(0, 549, Short.MAX_VALUE)
         );
 
         jScrollPane1.setViewportView(panelTabContainer);
@@ -341,7 +361,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         panelContentContainer.setLayout(panelContentContainerLayout);
         panelContentContainerLayout.setHorizontalGroup(
             panelContentContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 887, Short.MAX_VALUE)
+            .addGap(0, 1063, Short.MAX_VALUE)
         );
         panelContentContainerLayout.setVerticalGroup(
             panelContentContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -354,17 +374,17 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         panelRight.setLayout(panelRightLayout);
         panelRightLayout.setHorizontalGroup(
             panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(topbarContainer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 893, Short.MAX_VALUE)
+            .addComponent(topbarContainer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1069, Short.MAX_VALUE)
             .addGroup(panelRightLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1063, Short.MAX_VALUE))
         );
         panelRightLayout.setVerticalGroup(
             panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRightLayout.createSequentialGroup()
                 .addComponent(topbarContainer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE))
         );
 
         jPanel1.setBackground(new java.awt.Color(2, 2, 2));
@@ -373,10 +393,10 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
 
         labelSongName.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         labelSongName.setForeground(new java.awt.Color(255, 255, 255));
-        labelSongName.setText("Onichan Hentai");
+        labelSongName.setText("Select a song to play!");
 
         labelArtistName.setForeground(new java.awt.Color(233, 233, 233));
-        labelArtistName.setText("Baka yarou");
+        labelArtistName.setText("        ");
 
         jPanel6.setOpaque(false);
 
@@ -393,10 +413,10 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
         sliderPlayProgress.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         labelAudioLength.setForeground(new java.awt.Color(255, 255, 255));
-        labelAudioLength.setText("2:50");
+        labelAudioLength.setText("0:00");
 
         labelProgress.setForeground(new java.awt.Color(255, 255, 255));
-        labelProgress.setText("0:14");
+        labelProgress.setText("0:00");
         labelProgress.setToolTipText("");
 
         toggleLoop.setBackground(new java.awt.Color(2, 2, 2));
@@ -488,9 +508,9 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labelArtistName)
                     .addComponent(labelSongName, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 184, Short.MAX_VALUE)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(350, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -537,6 +557,10 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
 
     private void buttonPlayMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_buttonPlayMouseClicked
     {//GEN-HEADEREND:event_buttonPlayMouseClicked
+        if (!musicPlayerController.hasSong())
+        {
+            return;
+        }
         if (musicPlayerController.isPlaying())
         {
             buttonPlay.setIcon(ResourceLocator.getIcon("play_icon.png"));
@@ -551,22 +575,18 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
     private void toggleLoopActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_toggleLoopActionPerformed
     {//GEN-HEADEREND:event_toggleLoopActionPerformed
         musicPlayerController.setLoop(toggleLoop.isSelected());
+        toggleLoop.setBackground(toggleLoop.isSelected() ? new Color(88, 88, 15) : new Color(2, 2, 2, 1));
     }//GEN-LAST:event_toggleLoopActionPerformed
-
-    private void buttonNewPlaylistMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_buttonNewPlaylistMouseClicked
-    {//GEN-HEADEREND:event_buttonNewPlaylistMouseClicked
-        Playlist createdPlaylist = playlistController.onCreateNew();
-        if (createdPlaylist != null)
-        {
-            createNewPlayListMenu(createdPlaylist);
-        }
-    }//GEN-LAST:event_buttonNewPlaylistMouseClicked
 
     private void buttonAccountActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonAccountActionPerformed
     {//GEN-HEADEREND:event_buttonAccountActionPerformed
         if (SpotfifaiAuth.current().isSignedIn())
+        {
             SpotfifaiDialog.show("Account Management", this, new AccountManagementForm());
-        else
+            if(SpotfifaiAuth.current().isSignedIn())
+                labelWelcome.setText("Welcome: " + SpotfifaiAuth.current().getCurrentUser().getUsername());
+
+        } else
         {
             //this.setEnabled(false);
             new AuthFrame();
@@ -582,6 +602,15 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
     {//GEN-HEADEREND:event_jButton3ActionPerformed
         musicPlayerController.previousSong();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void buttonNewPlaylistActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonNewPlaylistActionPerformed
+    {//GEN-HEADEREND:event_buttonNewPlaylistActionPerformed
+        Playlist createdPlaylist = playlistController.onCreateNew();
+        if (createdPlaylist != null)
+        {
+            createNewPlayListMenu(createdPlaylist);
+        }
+    }//GEN-LAST:event_buttonNewPlaylistActionPerformed
 
     public static void main(String args[])
     {

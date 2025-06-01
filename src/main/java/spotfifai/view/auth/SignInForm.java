@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package spotfifai.ui.auth;
+package spotfifai.view.auth;
 
 import javax.swing.SwingUtilities;
 import spotfifai.controller.SpotfifaiAuth;

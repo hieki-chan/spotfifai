@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import javax.swing.Timer;
 import spotfifai.dao.SongDAO;
 import spotfifai.models.Playlist;
-import spotfifai.ui.MainFrame;
+import spotfifai.view.MainFrame;
 import spotfifai.models.Song;
 import spotfifai.util.audioplayer.AudioPlayer;
 import spotfifai.util.audioplayer.PlayerException;
@@ -35,7 +35,7 @@ public class MusicPlayerController implements IPlayerListener, IService
     File tempFile;
     boolean loop;
     boolean seeking;
-    boolean shouldNext;
+    boolean isChangingSong;
 
     IMusicListenter musicListener;
 
@@ -57,9 +57,14 @@ public class MusicPlayerController implements IPlayerListener, IService
         return audioPlayer.getMaxMicrosecondPosition();
     }
 
+    public boolean hasSong()
+    {
+        return currentSong != null;
+    }
+
     public boolean isPlaying()
     {
-        return audioPlayer.getStatus() == AudioPlayer.PLAYING;
+        return hasSong() && audioPlayer.getStatus() == AudioPlayer.PLAYING;
     }
 
     public void playAPlaylist(Playlist playlist)
@@ -113,14 +118,15 @@ public class MusicPlayerController implements IPlayerListener, IService
 
         if (song != null)
         {
-            shouldNext = false;
+            isChangingSong = false;
             playImmediately(song);
-            shouldNext = true;
+            isChangingSong = true;
         }
     }
 
     public void playDelayed(Song song)
     {
+        isChangingSong = true;
         Timer timer = new Timer(100, e ->
         {
             playImmediately(song);
@@ -145,6 +151,7 @@ public class MusicPlayerController implements IPlayerListener, IService
         try
         {
             currentSong = song;
+            isChangingSong = true;
 
             if (currentSong.getAudioData() == null)
             {
@@ -234,13 +241,13 @@ public class MusicPlayerController implements IPlayerListener, IService
 
     public void dispose()
     {
-        if(tempFile != null)
+        if (tempFile != null)
         {
-            tempFile.delete();
             audioPlayer.close();
+            tempFile.delete();
         }
     }
-    
+
     @Override
     public void opening(Object dataSource)
     {
@@ -250,6 +257,7 @@ public class MusicPlayerController implements IPlayerListener, IService
     @Override
     public void opened(Object dataSource, Map<String, Object> properties)
     {
+        isChangingSong = false;
         System.out.println("Opened: " + dataSource);
         System.out.println("Format properties: " + properties);
         if (properties.isEmpty())
@@ -305,7 +313,24 @@ public class MusicPlayerController implements IPlayerListener, IService
     @Override
     public void stopped()
     {
+        if (loop && !seeking && !isChangingSong)
+        {
+            System.out.println("loop!");
+            try
+            {
+                audioPlayer.seek(0);
+                audioPlayer.play();
 
+                resume();
+
+            } catch (PlayerException ex)
+            {
+                Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else
+        {
+
+        }
     }
 
     @Override
@@ -328,14 +353,7 @@ public class MusicPlayerController implements IPlayerListener, IService
         System.out.println("End of media reached");
         if (loop)
         {
-            try
-            {
-                audioPlayer.seek(0);
-                audioPlayer.play();
-            } catch (PlayerException ex)
-            {
-                Logger.getLogger(MusicPlayerController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
         } else
         {
 //            error  but i dont know why
@@ -343,9 +361,8 @@ public class MusicPlayerController implements IPlayerListener, IService
 //            {
 //                tempFile.delete();
 //            }
-
+            nextSong();
         }
-        nextSong();
     }
 
     @Override

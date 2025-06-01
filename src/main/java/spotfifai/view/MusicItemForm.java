@@ -2,17 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package spotfifai.ui;
+package spotfifai.view;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import spotfifai.controller.MusicPlayerController;
 import spotfifai.controller.PlaylistsController;
+import spotfifai.controller.UserController;
 import spotfifai.models.Song;
 import spotfifai.states.ResultState;
 import spotfifai.util.located.ServiceLocator;
-import spotfifai.theme.Theme;
+import spotfifai.view.theme.Theme;
 import spotfifai.util.ImageUtil;
 
 /**
@@ -24,6 +25,7 @@ public class MusicItemForm extends javax.swing.JPanel
 
     MusicPlayerController musicPlayer;
     PlaylistsController playlistController;
+    UserController userController;
     Song song;
 
     /**
@@ -35,10 +37,11 @@ public class MusicItemForm extends javax.swing.JPanel
         this.setSize(100, 100);
         this.musicPlayer = ServiceLocator.get(MusicPlayerController.class);
         this.playlistController = ServiceLocator.get(PlaylistsController.class);
+        this.userController = ServiceLocator.get(UserController.class);
         this.song = song;
 
         labelSongTitle.setText(song.getTitle());
-        labelArtistName.setText(song.getArtistId());
+        labelArtistName.setText(userController.getUser(song.getArtistId()).getUsername());
         labelDescription.setText("<html>" + song.getDescription() + "</html>");
         labelIcon.setIcon(ImageUtil.getIcon(song.getIconData(), 180, 180));
     }

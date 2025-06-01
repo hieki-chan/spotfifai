@@ -2,12 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package spotfifai.ui;
+package spotfifai.view;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JPanel;
-import spotfifai.theme.Theme;
+import spotfifai.view.theme.Theme;
 
 /**
  *

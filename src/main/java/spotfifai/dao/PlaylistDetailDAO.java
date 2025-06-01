@@ -16,16 +16,14 @@ import spotfifai.models.PlaylistDetail;
  *
  * @author admin
  */
-public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
+public class PlaylistDetailDAO extends BaseDAO<Integer, PlaylistDetail>
 {
 
-    @Override
     public boolean update(PlaylistDetail entity)
     {
         return false;
     }
 
-    @Override
     public boolean delete(PlaylistDetail entity)
     {
         System.out.println("del" + entity.getPlaylistId() + " " + entity.getSongId());
@@ -35,11 +33,11 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
         {
             stmt.setInt(1, entity.getPlaylistId());
             stmt.setString(2, entity.getSongId());
-            
+
             int affected = stmt.executeUpdate();
             if (affected > 0)
             {
-                removeFromCacheInternal(entity);
+                cachedEntities.remove(entity.hashCode());
                 return true;
             }
 
@@ -63,7 +61,7 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
             if (affected > 0)
             {
                 List<PlaylistDetail> entitiesToRemoved = new ArrayList<>();
-                for (var entity : getEntitiesAll())
+                for (var entity : cachedEntities.values())
                 {
                     if (entity.getPlaylistId() == playlistId)
                     {
@@ -75,7 +73,7 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
                 {
                     if (entity.getPlaylistId() == playlistId)
                     {
-                        removeFromCacheInternal(entity);
+                        cachedEntities.remove(entity.hashCode());
                     }
                 }
             }
@@ -93,24 +91,25 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
     {
         final String sql = "DELETE FROM PlaylistDetail WHERE songId = ?";
 
-        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql)) {
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
 
             stmt.setString(1, songId);
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected >= 0;
 
-        } catch (SQLException e) {
+        } catch (SQLException e)
+        {
             e.printStackTrace();
         }
-        
+
         return false;
     }
-    
-    @Override
+
     public boolean add(PlaylistDetail entity)
     {
-        if (contains(entity))
+        if (cachedEntities.containsKey(entity.hashCode()))
         {
             return false;
         }
@@ -124,7 +123,7 @@ public class PlaylistDetailDAO extends BaseDAO<PlaylistDetail>
             int affected = stmt.executeUpdate();
             if (affected > 0)
             {
-                addToCacheInternal(entity);
+                cachedEntities.put(entity.hashCode(), entity);
                 return true;
             }
 

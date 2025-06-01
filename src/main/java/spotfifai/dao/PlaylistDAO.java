@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import spotfifai.dbengine.JDBQuery;
 import spotfifai.models.Playlist;
 import spotfifai.models.PlaylistDetail;
 
@@ -20,7 +19,7 @@ import spotfifai.models.PlaylistDetail;
  *
  * @author admin
  */
-public final class PlaylistDAO extends BaseDAO<Playlist>
+public final class PlaylistDAO extends BaseDAO<Integer, Playlist>
 {
 
     public PlaylistDAO()
@@ -64,26 +63,19 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
                     ));
                 }
 
-                addToCacheInternal(playlist);
+                cachedEntities.put(playlistId, playlist);
             }
 
             return playlists;
 
         } catch (SQLException ex)
         {
-            Logger.getLogger(JDBQuery.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PlaylistDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;
     }
 
-    @Override
-    public boolean update(Playlist entity)
-    {
-        return false;
-    }
-
-    @Override
     public boolean delete(Playlist entity)
     {
         final String sql = "DELETE FROM Playlist WHERE playlistId = ?";
@@ -94,7 +86,7 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
 
             if (affectedRows > 0)
             {
-                removeFromCacheInternal(entity);
+                cachedEntities.remove(entity.getPlaylistId());
                 return true;
             }
 
@@ -106,10 +98,9 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
         return false;
     }
 
-    @Override
     public boolean add(Playlist entity)
     {
-        if (contains(entity))
+        if (cachedEntities.containsKey(entity.getPlaylistId()))
         {
             return false;
         }
@@ -130,7 +121,7 @@ public final class PlaylistDAO extends BaseDAO<Playlist>
             {
                 int id = rs.getInt(1);
                 entity.setPlaylistId(id);
-                addToCacheInternal(entity);
+                cachedEntities.put(entity.getPlaylistId(), entity);
 
                 return true;
             }

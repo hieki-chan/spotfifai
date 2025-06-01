@@ -54,15 +54,17 @@ public class SongDistributorController implements IService, IAuthListener
         }
         return songDAO.getSongs(songIds);
     }
+    
+    public Map<String, Song> getAllSongs()
+    {
+        return songDAO.queryAllSongs();
+    }
 
     public boolean upload(Song song)
     {
         song.setArtistId(SpotfifaiAuth.current().getCurrentUser().getUserId());
         boolean isSuccess = songDAO.add(song);
-        if (isSuccess)
-        {
-            
-        }
+
 
         return isSuccess;
     }

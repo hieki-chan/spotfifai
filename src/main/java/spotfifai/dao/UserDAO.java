@@ -7,39 +7,76 @@ package spotfifai.dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import spotfifai.dbengine.JDBQuery;
 import spotfifai.models.User;
 
 /**
  *
  * @author admin
  */
-public class UserDAO extends BaseDAO<User>
+public class UserDAO extends BaseDAO<String, User>
 {
 
-    void onQuerySelector()
+    public Map<String, User> queryAllUser()
     {
         final String sql = "SELECT * FROM [User]";
+        Map<String, User> users = new HashMap<>();
 
-        JDBQuery.selectAllFrom(super.getConnection(), sql, (rs) ->
+        try
         {
-            User user = new User(
-                    rs.getString("userId"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getBytes("iconData"),
-                    rs.getInt("role")
-            );
-            addToCacheInternal(user);
-        });
+            Statement statement = super.getConnection().createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next())
+            {
+                User user = new User(
+                        rs.getString("userId"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getBytes("iconData"),
+                        rs.getInt("role")
+                );
+            }
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return users;
     }
 
-    @Override
+    public User queryUser(String userId)
+    {
+        String sql = "SELECT * FROM [User] WHERE userId = ?";
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setString(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next())
+            {
+                return new User(
+                        rs.getString("userId"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getBytes("iconData"),
+                        rs.getInt("role")
+                );
+            }
+        } catch (Exception e)
+        {
+            return null;
+        }
+
+        return null;
+    }
+
     public boolean update(User entity)
     {
-         final String sql = "UPDATE [User] SET username = ?, password = ?, iconData = ? WHERE userId = ?";
+        final String sql = "UPDATE [User] SET username = ?, password = ?, iconData = ? WHERE userId = ?";
 
         try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
         {
@@ -63,13 +100,11 @@ public class UserDAO extends BaseDAO<User>
         return false;
     }
 
-    @Override
     public boolean delete(User entity)
     {
         return false;
     }
 
-    @Override
     public boolean add(User entity)
     {
         String sql = "INSERT INTO [User] VALUES (?, ?, ?, ?, ?)";
@@ -84,7 +119,6 @@ public class UserDAO extends BaseDAO<User>
 
             if (affected > 0)
             {
-                addToCacheInternal(entity);
                 return true;
             }
         } catch (Exception e)
@@ -107,8 +141,8 @@ public class UserDAO extends BaseDAO<User>
             if (rs.next())
             {
                 return new User(
-                        rs.getString("userId"), 
-                        rs.getString("username"), 
+                        rs.getString("userId"),
+                        rs.getString("username"),
                         rs.getString("password"),
                         rs.getBytes("iconData"),
                         rs.getInt("role")

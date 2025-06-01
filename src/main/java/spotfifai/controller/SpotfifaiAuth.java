@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import spotfifai.dao.UserDAO;
+import spotfifai.models.Role;
 import spotfifai.models.User;
 import spotfifai.states.ResultState;
 import spotfifai.util.located.ResourceLocator;
@@ -68,7 +69,7 @@ public class SpotfifaiAuth
             return ResultState.FAILED;
         }
         User user = new User(randomId, username, password, iconData, 0);
-        boolean isSuccess = userDAO.add(user);
+        boolean isSuccess = userDAO.add(user);//database check
 
         if (isSuccess)
         {
@@ -84,6 +85,8 @@ public class SpotfifaiAuth
     public boolean signIn(String username, String password)
     {
         User u = userDAO.checkForUser(username, password);
+        if(u == null)
+                return false;
         if (u.getIconData() == null)
         {
             try
@@ -118,6 +121,11 @@ public class SpotfifaiAuth
             l.onSignedOut();
         }
     }
+    
+    public boolean isSignedAsAdmin()
+    {
+        return isSignedIn() && currentUser.getRole() == Role.ADMIN;
+    }
 
     public boolean isUsernameValid(String username)
     {
@@ -128,7 +136,7 @@ public class SpotfifaiAuth
         }
 
         //username is unique
-        for (User user : userDAO.getEntitiesAll())
+        for (User user : userDAO.getEntitiesAll().values())
         {
             if (user.getUsername().compareTo(username) == 0)
             {

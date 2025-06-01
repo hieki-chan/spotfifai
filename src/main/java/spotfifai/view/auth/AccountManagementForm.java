@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package spotfifai.ui.auth;
+package spotfifai.view.auth;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +16,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import spotfifai.controller.SpotfifaiAuth;
 import spotfifai.controller.UserController;
 import spotfifai.models.User;
-import spotfifai.ui.SongEditorForm;
+import spotfifai.view.SongEditorForm;
 import spotfifai.util.ImageUtil;
 import spotfifai.util.located.ServiceLocator;
 
@@ -217,6 +217,8 @@ public class AccountManagementForm extends javax.swing.JPanel
 
     private void labelIconMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_labelIconMouseClicked
     {//GEN-HEADEREND:event_labelIconMouseClicked
+        if(!isEditing)
+            return;
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter restrict = new FileNameExtensionFilter("Image files (JPG, JPEG, PNG)", "jpg", "jpeg", "png");
         fileChooser.setFileFilter(restrict);

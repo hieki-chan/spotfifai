@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package spotfifai.ui;
+package spotfifai.view;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import spotfifai.controller.SongDistributorController;
 import spotfifai.models.Song;
@@ -93,7 +94,7 @@ public class SongEditorForm extends javax.swing.JPanel
         txtFieldSongTitle = new javax.swing.JTextField();
         txtFieldSongDescription = new javax.swing.JTextField();
         buttonOk = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        buttonCancel = new javax.swing.JButton();
         buttonChooseFile = new javax.swing.JButton();
         labelFilePath = new javax.swing.JLabel();
         labelIcon = new javax.swing.JLabel();
@@ -101,7 +102,7 @@ public class SongEditorForm extends javax.swing.JPanel
         jLabel4 = new javax.swing.JLabel();
         labelId = new javax.swing.JLabel();
 
-        setPreferredSize(new java.awt.Dimension(463, 500));
+        setPreferredSize(new java.awt.Dimension(350, 500));
 
         jLabel2.setLabelFor(txtFieldSongTitle);
         jLabel2.setText("Title: ");
@@ -124,8 +125,15 @@ public class SongEditorForm extends javax.swing.JPanel
             }
         });
 
-        jButton2.setText("Cancel");
-        jButton2.setPreferredSize(new java.awt.Dimension(100, 50));
+        buttonCancel.setText("Cancel");
+        buttonCancel.setPreferredSize(new java.awt.Dimension(100, 50));
+        buttonCancel.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                buttonCancelActionPerformed(evt);
+            }
+        });
 
         buttonChooseFile.setText("Choose File");
         buttonChooseFile.addActionListener(new java.awt.event.ActionListener()
@@ -179,16 +187,15 @@ public class SongEditorForm extends javax.swing.JPanel
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(buttonOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buttonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(30, 30, 30)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtFieldSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtFieldSongDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(txtFieldSongTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(jLabel4)
+                            .addGap(18, 18, 18)
+                            .addComponent(txtFieldSongDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(34, 34, 34))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,7 +219,7 @@ public class SongEditorForm extends javax.swing.JPanel
                     .addComponent(labelFilePath))
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonCancel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonOk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -269,7 +276,7 @@ public class SongEditorForm extends javax.swing.JPanel
             }
         }
 
-        this.setEnabled(false);
+        SwingUtilities.getWindowAncestor(this).dispose();
     }//GEN-LAST:event_buttonOkActionPerformed
 
     private void labelIconMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_labelIconMouseClicked
@@ -297,11 +304,16 @@ public class SongEditorForm extends javax.swing.JPanel
         }
     }//GEN-LAST:event_labelIconMouseClicked
 
+    private void buttonCancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_buttonCancelActionPerformed
+    {//GEN-HEADEREND:event_buttonCancelActionPerformed
+        SwingUtilities.getWindowAncestor(this).dispose();
+    }//GEN-LAST:event_buttonCancelActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonCancel;
     private javax.swing.JButton buttonChooseFile;
     private javax.swing.JButton buttonOk;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

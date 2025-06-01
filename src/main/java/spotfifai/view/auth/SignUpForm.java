@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package spotfifai.ui.auth;
+package spotfifai.view.auth;
 
 import java.awt.Color;
+import javax.swing.SwingUtilities;
 import spotfifai.controller.SpotfifaiAuth;
 import spotfifai.states.ResultState;
 
@@ -137,6 +138,8 @@ public class SignUpForm extends javax.swing.JPanel
             return;
         
         ResultState state = SpotfifaiAuth.current().signUp(username, password);
+        if(state == ResultState.SUCCESS)
+            SwingUtilities.getWindowAncestor(this).dispose();
     }//GEN-LAST:event_buttonSignUpActionPerformed
 
 

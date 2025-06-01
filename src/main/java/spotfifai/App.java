@@ -5,13 +5,13 @@ package spotfifai;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import spotfifai.theme.FlatTheme;
-import spotfifai.theme.Theme;
+import spotfifai.view.theme.FlatTheme;
+import spotfifai.view.theme.Theme;
 import spotfifai.controller.*;
 import spotfifai.dao.*;
 import spotfifai.dbengine.DBConnector;
 import spotfifai.controller.MusicPlayerController;
-import spotfifai.ui.MainFrame;
+import spotfifai.view.MainFrame;
 import spotfifai.util.audioplayer.AudioPlayer;
 import spotfifai.util.located.ServiceLocator;
 

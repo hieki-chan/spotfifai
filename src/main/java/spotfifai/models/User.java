@@ -62,8 +62,6 @@ public class User
         this.iconData = iconData;
     }
     
-    
-
     public Role getRole()
     {
         return role;

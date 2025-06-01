@@ -37,9 +37,4 @@ public class HomeController implements IService
         
         return songList;
     }
-    
-    public Song searchSong()
-    {
-        return null;
-    }
 }

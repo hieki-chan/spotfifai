@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package spotfifai.ui;
+package spotfifai.view;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -36,11 +36,11 @@ public class PlaylistForm extends javax.swing.JPanel
         songController = ServiceLocator.get(SongDistributorController.class);
         musicPlayer = ServiceLocator.get(MusicPlayerController.class);
         
-        tableSongs.getColumn("Play").setCellRenderer(new ButtonRenderer());
-        tableSongs.getColumn("Play").setCellEditor(new ButtonEditor(tableSongs, e ->
-        {
-            
-        }));
+//        tableSongs.getColumn("Play").setCellRenderer(new ButtonRenderer());
+//        tableSongs.getColumn("Play").setCellEditor(new ButtonEditor(tableSongs, e ->
+//        {
+//            
+//        }));
         
         tableSongs.getColumn("Remove").setCellRenderer(new ButtonRenderer());
         tableSongs.getColumn("Remove").setCellEditor(new ButtonEditor(tableSongs, e ->
@@ -73,7 +73,7 @@ public class PlaylistForm extends javax.swing.JPanel
             {
                 tableModel.insertRow(0, new Object[]
                 {
-                    song.getTitle(), song.getDescription(), song.getArtistId(), "Play", "Remove"
+                    song.getTitle(), song.getDescription(), song.getArtistId(), "Remove"
                 });
             }
         }
@@ -91,16 +91,16 @@ public class PlaylistForm extends javax.swing.JPanel
     private void initComponents()
     {
 
-        jLabel1 = new javax.swing.JLabel();
+        labelCoverIcon = new javax.swing.JLabel();
         buttonDelete = new javax.swing.JButton();
         labelTitle = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableSongs = new javax.swing.JTable();
         buttonPlayAll = new javax.swing.JButton();
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        labelCoverIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelCoverIcon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/anime_wallpaper.jpg"))); // NOI18N
+        labelCoverIcon.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         buttonDelete.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         buttonDelete.setText("Remove");
@@ -120,20 +120,20 @@ public class PlaylistForm extends javax.swing.JPanel
         tableSongs.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][]
             {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String []
             {
-                "Title", "Description", "Artist", "Play", "Remove"
+                "Title", "Description", "Artist", "Remove"
             }
         )
         {
             boolean[] canEdit = new boolean []
             {
-                false, false, false, true, true
+                false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex)
@@ -141,6 +141,7 @@ public class PlaylistForm extends javax.swing.JPanel
                 return canEdit [columnIndex];
             }
         });
+        tableSongs.setColumnSelectionAllowed(true);
         tableSongs.setRowHeight(50);
         tableSongs.setShowGrid(true);
         tableSongs.setShowVerticalLines(false);
@@ -151,8 +152,6 @@ public class PlaylistForm extends javax.swing.JPanel
         {
             tableSongs.getColumnModel().getColumn(3).setResizable(false);
             tableSongs.getColumnModel().getColumn(3).setPreferredWidth(50);
-            tableSongs.getColumnModel().getColumn(4).setResizable(false);
-            tableSongs.getColumnModel().getColumn(4).setPreferredWidth(50);
         }
 
         buttonPlayAll.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -169,7 +168,7 @@ public class PlaylistForm extends javax.swing.JPanel
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 872, Short.MAX_VALUE)
+            .addComponent(labelCoverIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 872, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(labelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -183,7 +182,7 @@ public class PlaylistForm extends javax.swing.JPanel
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelCoverIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -220,8 +219,8 @@ public class PlaylistForm extends javax.swing.JPanel
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonDelete;
     private javax.swing.JButton buttonPlayAll;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelCoverIcon;
     private javax.swing.JLabel labelTitle;
     private javax.swing.JTable tableSongs;
     // End of variables declaration//GEN-END:variables
