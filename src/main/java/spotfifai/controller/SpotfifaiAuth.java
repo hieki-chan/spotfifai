@@ -179,6 +179,11 @@ public class SpotfifaiAuth
         //length >=8
         return text.length() >= 8;
     }
+    
+    public boolean checkUniqueUser(String userId, String username)
+    {
+        return userDAO.checkUniqueUser(userId, username);
+    }
 
     public void addListener(IAuthListener l)
     {

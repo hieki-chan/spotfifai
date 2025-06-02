@@ -43,7 +43,7 @@ public class App
             }
         });
 
-        SpotfifaiAuth.current().signIn("admin", "123");
+        //SpotfifaiAuth.current().signIn("admin", "123");
 
     }
 

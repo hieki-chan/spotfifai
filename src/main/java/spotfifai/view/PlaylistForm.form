@@ -96,7 +96,7 @@
               <Table columnCount="4" rowCount="4">
                 <Column editable="false" title="Title" type="java.lang.Object"/>
                 <Column editable="false" title="Description" type="java.lang.Object"/>
-                <Column editable="false" title="Artist" type="java.lang.Object"/>
+                <Column editable="false" title="Artist Id" type="java.lang.Object"/>
                 <Column editable="true" title="Remove" type="java.lang.Object"/>
               </Table>
             </Property>
@@ -124,7 +124,6 @@
                 </Column>
               </TableColumnModel>
             </Property>
-            <Property name="columnSelectionAllowed" type="boolean" value="true"/>
             <Property name="rowHeight" type="int" value="50"/>
             <Property name="showGrid" type="boolean" value="true"/>
             <Property name="showVerticalLines" type="boolean" value="false"/>

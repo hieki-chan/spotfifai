@@ -261,6 +261,12 @@ public class SongEditorForm extends javax.swing.JPanel
             return;
         }
         
+        if(!songDistributor.checkUniqueTitle(tempSong))
+        {
+            JOptionPane.showMessageDialog(null, "Song title's already used");
+            return;
+        }
+        
         if (!songDistributor.getSongDAO().contains(tempSong))
         {
             //publish

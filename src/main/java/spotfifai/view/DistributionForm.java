@@ -301,6 +301,12 @@ public class DistributionForm extends javax.swing.JPanel implements IAuthListene
         {
             return;
         }
+        
+        if(JOptionPane.showConfirmDialog(null, "Delete song?") != JOptionPane.OK_OPTION)
+        {
+            return;
+        }
+        
         if (songDistributor.deleteSong(selectedSong))
         {
             System.out.println("deleted song");

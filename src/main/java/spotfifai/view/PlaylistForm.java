@@ -127,7 +127,7 @@ public class PlaylistForm extends javax.swing.JPanel
             },
             new String []
             {
-                "Title", "Description", "Artist", "Remove"
+                "Title", "Description", "Artist Id", "Remove"
             }
         )
         {
@@ -141,7 +141,6 @@ public class PlaylistForm extends javax.swing.JPanel
                 return canEdit [columnIndex];
             }
         });
-        tableSongs.setColumnSelectionAllowed(true);
         tableSongs.setRowHeight(50);
         tableSongs.setShowGrid(true);
         tableSongs.setShowVerticalLines(false);

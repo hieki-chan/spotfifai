@@ -254,4 +254,23 @@ public final class SongDAO extends BaseDAO<String, Song>
 
         return false;
     }
+
+    public boolean checkUniqueTitle(Song song)
+    {
+        String sql = "SELECT 1 FROM Song WHERE songId != ? AND title = ?";
+
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setString(1, song.getSongId());
+            stmt.setString(2, song.getTitle());
+            ResultSet rs = stmt.executeQuery();
+
+            return !rs.next();
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

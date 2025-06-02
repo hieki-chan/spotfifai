@@ -89,9 +89,15 @@ public class SongDistributorController implements IService, IAuthListener
     public boolean checkForSong(Song song)
     {
         return !song.getTitle().isEmpty() && !song.getTitle().isEmpty()
+                && song.getTitle().length() >= 8
                 && !song.getDescription().isBlank() && !song.getDescription().isEmpty()
                 && song.getAudioData() != null
                 && song.getIconData() != null;
+    }
+    
+    public boolean checkUniqueTitle(Song song)
+    {
+        return songDAO.checkUniqueTitle(song);
     }
 
     @Override

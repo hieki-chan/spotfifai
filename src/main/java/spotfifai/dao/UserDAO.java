@@ -155,4 +155,23 @@ public class UserDAO extends BaseDAO<String, User>
 
         return null;
     }
+    
+    public boolean checkUniqueUser(String userId, String username)
+    {
+        String sql = "SELECT 1 FROM [User] WHERE userId != ? AND username = ?";
+
+        try (PreparedStatement stmt = super.getConnection().prepareStatement(sql))
+        {
+            stmt.setString(1, userId);
+            stmt.setString(2, username);
+            ResultSet rs = stmt.executeQuery();
+
+            return !rs.next();
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

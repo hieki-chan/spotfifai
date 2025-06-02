@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -190,6 +189,13 @@ public class AccountManagementForm extends javax.swing.JPanel
                 return;
             }
             
+            if(!SpotfifaiAuth.current().checkUniqueUser(u.getUserId(), newUserName))
+            {
+                JOptionPane.showMessageDialog(null, "Username's already used", 
+                        "Invalid", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             u.setUsername(newUserName);
             u.setPassword(newPassword);
             userController.updateUser(u);
@@ -233,7 +239,7 @@ public class AccountManagementForm extends javax.swing.JPanel
                 User u = SpotfifaiAuth.current().getCurrentUser();
                 byte[] iconData = Files.readAllBytes(fileChooser.getSelectedFile().toPath());
                 u.setIconData(iconData);
-                labelIcon.setIcon(new ImageIcon(iconData));
+                labelIcon.setIcon(ImageUtil.getIcon(iconData, 80, 80));
 
             } catch (IOException ex)
             {
