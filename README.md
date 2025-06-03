@@ -1,2 +1,4 @@
 # spotfifai
-A simple music player using java swing for learning in the university
+A simple music player built with Java Swing for university learning purposes.
+
+![App Screenshot](imgs/app.png)

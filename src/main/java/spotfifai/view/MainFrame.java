@@ -156,7 +156,7 @@ public class MainFrame extends javax.swing.JFrame implements IAuthListener
 
     private void createNewPlayListMenu(Playlist playlist)
     {
-        var playlistMenu = new MenuItemForm(playlist.getTitle(), "3 songs", ResourceLocator.getIcon("playlist_icon.png"));
+        var playlistMenu = new MenuItemForm(playlist.getTitle(), "songs", ResourceLocator.getIcon("playlist_icon.png"));
         playlistMenu.setOnUserClicked(() ->
         {
             var playlistForm = tabSystem.viewTab(PlaylistForm.class);
